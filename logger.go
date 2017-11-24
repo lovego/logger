@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/lovego/xiaomei/utils"
+	"github.com/lovego/errs"
 )
 
 type Logger struct {
@@ -63,7 +63,7 @@ func (log *Logger) Errorln(args ...interface{}) {
 }
 
 func (log *Logger) doAlarm(title string) {
-	stack := utils.Stack(3)
+	stack := errs.Stack(3)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
 	title = log.prefix + title
@@ -76,7 +76,7 @@ func (log *Logger) doAlarm(title string) {
 func (log *Logger) Alarm(titleValue, contentValue interface{}) {
 	title := fmt.Sprint(titleValue)
 	content := fmt.Sprint(contentValue)
-	stack := utils.Stack(3)
+	stack := errs.Stack(3)
 
 	content = log.output(title) + content + "\n" + stack
 	log.writer.Write([]byte(content))
@@ -106,7 +106,7 @@ func (log *Logger) Fatalln(args ...interface{}) {
 }
 
 func (log *Logger) doExit(title string) {
-	stack := utils.Stack(3)
+	stack := errs.Stack(3)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
 	title = log.prefix + title
@@ -129,7 +129,7 @@ func (log *Logger) Panicln(args ...interface{}) {
 }
 
 func (log *Logger) doPanic(title string) {
-	stack := utils.Stack(3)
+	stack := errs.Stack(3)
 	titleLine := log.output(title)
 
 	content := titleLine + stack
