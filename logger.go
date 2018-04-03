@@ -63,7 +63,7 @@ func (log *Logger) Errorln(args ...interface{}) {
 }
 
 func (log *Logger) doAlarm(title string) {
-	stack := errs.Stack(3)
+	stack := errs.Stack(4)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
 	title = log.prefix + title
@@ -106,7 +106,7 @@ func (log *Logger) Fatalln(args ...interface{}) {
 }
 
 func (log *Logger) doExit(title string) {
-	stack := errs.Stack(3)
+	stack := errs.Stack(4)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
 	title = log.prefix + title
@@ -129,7 +129,7 @@ func (log *Logger) Panicln(args ...interface{}) {
 }
 
 func (log *Logger) doPanic(title string) {
-	stack := errs.Stack(3)
+	stack := errs.Stack(4)
 	titleLine := log.output(title)
 
 	content := titleLine + stack
