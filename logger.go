@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"time"
 
@@ -26,8 +27,21 @@ func New(prefix string, writer io.Writer, alarm Alarm) *Logger {
 	if writer == nil {
 		writer = os.Stderr
 	}
+
+	hostname, _ := os.Hostname()
+	pid := os.Getpid()
+	IPs, _ := net.LookupIP(hostname)
+	ips := []string{}
+	for _, IP := range IPs {
+		ip := IP.String()
+		if mask := net.ParseIP(ip).DefaultMask(); mask != nil {
+			ips = append(ips, ip)
+		}
+	}
+	constant := fmt.Sprintf("(HOST: %s, PID: %d, IP: %v)", hostname, pid, ips)
+
 	return &Logger{
-		prefix: prefix, writer: writer, alarm: alarm,
+		prefix: prefix + constant, writer: writer, alarm: alarm,
 	}
 }
 
