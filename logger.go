@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/lovego/errs"
@@ -30,15 +31,16 @@ func New(prefix string, writer io.Writer, alarm Alarm) *Logger {
 
 	hostname, _ := os.Hostname()
 	pid := os.Getpid()
-	IPs, _ := net.LookupIP(hostname)
+	addrs, _ := net.InterfaceAddrs()
 	ips := []string{}
-	for _, IP := range IPs {
-		ip := IP.String()
-		if mask := net.ParseIP(ip).DefaultMask(); mask != nil {
+	for _, addr := range addrs {
+		ip := strings.Split(addr.String(), `/`)[0]
+		IP := net.ParseIP(ip)
+		if mask := IP.DefaultMask(); mask != nil && !IP.IsLoopback() {
 			ips = append(ips, ip)
 		}
 	}
-	constant := fmt.Sprintf("(HOST: %s, PID: %d, IP: %v)", hostname, pid, ips)
+	constant := fmt.Sprintf("(HOST: %s, PID: %d, IPs: %v)", hostname, pid, ips)
 
 	return &Logger{
 		prefix: prefix + constant, writer: writer, alarm: alarm,
