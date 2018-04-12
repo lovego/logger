@@ -61,7 +61,7 @@ func (log *Logger) output(s string) string {
 	if len(s) == 0 || s[len(s)-1] != '\n' {
 		s += "\n"
 	}
-	return log.prefix + time.Now().Format(timeFormat) + ` ` + s
+	return time.Now().Format(timeFormat) + ` ` + log.prefix + ` ` + s
 }
 
 func (log *Logger) Error(args ...interface{}) {
@@ -80,7 +80,7 @@ func (log *Logger) doAlarm(title string) {
 	stack := errs.Stack(4)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
-	title = log.prefix + title
+	title = log.prefix + ` ` + title
 	mergeKey := title + "\n" + stack // 根据title和调用栈对报警消息进行合并
 	if log.alarm != nil {
 		log.alarm.Alarm(title, content, mergeKey)
@@ -94,7 +94,7 @@ func (log *Logger) Alarm(titleValue, contentValue interface{}) {
 
 	content = log.output(title) + content + "\n" + stack
 	log.writer.Write([]byte(content))
-	title = log.prefix + title
+	title = log.prefix + ` ` + title
 	mergeKey := title + "\n" + stack // 根据title和调用栈对报警消息进行合并
 	if log.alarm != nil {
 		log.alarm.Alarm(title, content, mergeKey)
@@ -123,7 +123,7 @@ func (log *Logger) doExit(title string) {
 	stack := errs.Stack(4)
 	content := log.output(title) + stack
 	log.writer.Write([]byte(content))
-	title = log.prefix + title
+	title = log.prefix + ` ` + title
 	if log.alarm != nil {
 		log.alarm.Send(title, content)
 	}
@@ -150,7 +150,7 @@ func (log *Logger) doPanic(title string) {
 	if log.writer != os.Stderr {
 		log.writer.Write([]byte(content))
 	}
-	title = log.prefix + title
+	title = log.prefix + ` ` + title
 	if log.alarm != nil {
 		log.alarm.Send(title, content)
 	}
