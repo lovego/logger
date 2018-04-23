@@ -41,7 +41,7 @@ func New(prefix string, writer io.Writer, alarm Alarm) *Logger {
 			ips = append(ips, ip)
 		}
 	}
-	constant := fmt.Sprintf("(HOST: %s, PID: %d, IPs: %v)", hostname, pid, ips)
+	constant := fmt.Sprintf("(HOST: %s, PID: %d, IPs: %v) ", hostname, pid, ips)
 
 	return &Logger{
 		prefix: prefix, constant: constant, writer: writer, alarm: alarm,
@@ -64,7 +64,7 @@ func (log *Logger) output(s string) string {
 	if len(s) == 0 || s[len(s)-1] != '\n' {
 		s += "\n"
 	}
-	return time.Now().Format(timeFormat) + ` ` + log.prefix + `(` + log.constant + `) ` + s
+	return time.Now().Format(timeFormat) + ` ` + log.prefix + log.constant + s
 }
 
 func (log *Logger) Error(args ...interface{}) {
