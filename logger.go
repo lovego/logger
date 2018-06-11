@@ -11,151 +11,132 @@ import (
 	"github.com/lovego/errs"
 )
 
-type Logger struct {
-	prefix   string
-	constant string
-	writer   io.Writer
-	alarm    Alarm
+type logger struct {
+	level     uint8
+	fields    map[string]interface{}
+	formatter Formatter
+	writer    io.Writer
+	alarm     Alarm
 }
 
-type Alarm interface {
-	Send(title, content string)
-	Alarm(title, content, mergeKey string)
-}
-
-const timeFormat = `2006/01/02 15:04:05`
-
-func New(prefix string, writer io.Writer, alarm Alarm) *Logger {
+func New(writer io.Writer) *Logger {
 	if writer == nil {
 		writer = os.Stderr
 	}
+	return &Logger{writer: writer}
+}
 
-	hostname, _ := os.Hostname()
-	pid := os.Getpid()
-	addrs, _ := net.InterfaceAddrs()
-	ips := []string{}
-	for _, addr := range addrs {
-		ip := strings.Split(addr.String(), `/`)[0]
-		IP := net.ParseIP(ip)
-		if mask := IP.DefaultMask(); mask != nil && !IP.IsLoopback() {
-			ips = append(ips, ip)
-		}
+func (l *Logger) Debug(args ...interface{}) bool {
+	if len(args) > 0 && l.level >= Debug {
+		l.output(Debug, fmt.Sprint(args...), nil)
 	}
-	constant := fmt.Sprintf("(HOST: %s, PID: %d, IPs: %v) ", hostname, pid, ips)
+	return l.level >= Debug
+}
 
-	return &Logger{
-		prefix: prefix, constant: constant, writer: writer, alarm: alarm,
+func (l *Logger) Debugf(format string, args ...interface{}) {
+	if l.level >= Debug {
+		l.output(Debug, fmt.Sprintf(format, args...), nil)
 	}
 }
 
-func (log *Logger) Print(args ...interface{}) {
-	log.writer.Write([]byte(log.output(fmt.Sprint(args...))))
-}
-
-func (log *Logger) Printf(format string, args ...interface{}) {
-	log.writer.Write([]byte(log.output(fmt.Sprintf(format, args...))))
-}
-
-func (log *Logger) Println(args ...interface{}) {
-	log.writer.Write([]byte(log.output(fmt.Sprintln(args...))))
-}
-
-func (log *Logger) output(s string) string {
-	if len(s) == 0 || s[len(s)-1] != '\n' {
-		s += "\n"
+func (l *Logger) Info(args ...interface{}) bool {
+	if len(args) > 0 && l.level >= Info {
+		l.output(Info, fmt.Sprint(args...), nil)
 	}
-	return time.Now().Format(timeFormat) + ` ` + log.prefix + log.constant + s
+	return l.level >= Info
 }
 
-func (log *Logger) Error(args ...interface{}) {
-	log.doAlarm(fmt.Sprint(args...))
+func (l *Logger) Infof(format string, args ...interface{}) {
+	if l.level >= Info {
+		l.output(Info, fmt.Sprintf(format, args...), nil)
+	}
 }
 
-func (log *Logger) Errorf(format string, args ...interface{}) {
-	log.doAlarm(fmt.Sprintf(format, args...))
+func (l *Logger) Error(args ...interface{}) {
+	l.doAlarm(fmt.Sprint(args...))
 }
 
-func (log *Logger) Errorln(args ...interface{}) {
-	log.doAlarm(fmt.Sprintln(args...))
+func (l *Logger) Errorf(format string, args ...interface{}) {
+	l.doAlarm(fmt.Sprintf(format, args...))
 }
 
-func (log *Logger) doAlarm(title string) {
+func (l *Logger) doAlarm(title string) {
 	stack := errs.Stack(4)
-	content := log.output(title) + stack
-	log.writer.Write([]byte(content))
-	title = log.prefix + ` ` + title
+	content := l.output(title) + stack
+	l.writer.Write([]byte(content))
+	title = l.prefix + ` ` + title
 	mergeKey := title + "\n" + stack // 根据title和调用栈对报警消息进行合并
-	if log.alarm != nil {
-		log.alarm.Alarm(title, content, mergeKey)
+	if l.alarm != nil {
+		l.alarm.Alarm(title, content, mergeKey)
 	}
 }
 
-func (log *Logger) Alarm(titleValue, contentValue interface{}) {
+func (l *Logger) Alarm(titleValue, contentValue interface{}) {
 	title := fmt.Sprint(titleValue)
 	content := fmt.Sprint(contentValue)
 	stack := errs.Stack(3)
 
-	content = log.output(title) + content + "\n" + stack
-	log.writer.Write([]byte(content))
-	title = log.prefix + ` ` + title
+	content = l.output(title) + content + "\n" + stack
+	l.writer.Write([]byte(content))
+	title = l.prefix + ` ` + title
 	mergeKey := title + "\n" + stack // 根据title和调用栈对报警消息进行合并
-	if log.alarm != nil {
-		log.alarm.Alarm(title, content, mergeKey)
+	if l.alarm != nil {
+		l.alarm.Alarm(title, content, mergeKey)
 	}
 }
 
-func (log *Logger) Recover() {
+func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		log.doAlarm(fmt.Sprintf("PANIC: %v\n", err))
+		l.doAlarm(fmt.Sprintf("PANIC: %v\n", err))
 	}
 }
 
-func (log *Logger) Fatal(args ...interface{}) {
-	log.doExit(fmt.Sprint(args...))
+func (l *Logger) Fatal(args ...interface{}) {
+	l.doExit(fmt.Sprint(args...))
 }
 
-func (log *Logger) Fatalf(format string, args ...interface{}) {
-	log.doExit(fmt.Sprintf(format, args...))
+func (l *Logger) Fatalf(format string, args ...interface{}) {
+	l.doExit(fmt.Sprintf(format, args...))
 }
 
-func (log *Logger) Fatalln(args ...interface{}) {
-	log.doExit(fmt.Sprintln(args...))
+func (l *Logger) Fatalln(args ...interface{}) {
+	l.doExit(fmt.Sprintln(args...))
 }
 
-func (log *Logger) doExit(title string) {
+func (l *Logger) doExit(title string) {
 	stack := errs.Stack(4)
-	content := log.output(title) + stack
-	log.writer.Write([]byte(content))
-	title = log.prefix + ` ` + title
-	if log.alarm != nil {
-		log.alarm.Send(title, content)
+	content := l.output(title) + stack
+	l.writer.Write([]byte(content))
+	title = l.prefix + ` ` + title
+	if l.alarm != nil {
+		l.alarm.Send(title, content)
 	}
 	os.Exit(1)
 }
 
-func (log *Logger) Panic(args ...interface{}) {
-	log.doPanic(fmt.Sprint(args...))
+func (l *Logger) Panic(args ...interface{}) {
+	l.doPanic(fmt.Sprint(args...))
 }
 
-func (log *Logger) Panicf(format string, args ...interface{}) {
-	log.doPanic(fmt.Sprintf(format, args...))
+func (l *Logger) Panicf(format string, args ...interface{}) {
+	l.doPanic(fmt.Sprintf(format, args...))
 }
 
-func (log *Logger) Panicln(args ...interface{}) {
-	log.doPanic(fmt.Sprintln(args...))
+func (l *Logger) Panicln(args ...interface{}) {
+	l.doPanic(fmt.Sprintln(args...))
 }
 
-func (log *Logger) doPanic(title string) {
+func (l *Logger) doPanic(title string) {
 	stack := errs.Stack(4)
-	titleLine := log.output(title)
+	titleLine := l.output(title)
 
 	content := titleLine + stack
-	if log.writer != os.Stderr {
-		log.writer.Write([]byte(content))
+	if l.writer != os.Stderr {
+		l.writer.Write([]byte(content))
 	}
-	title = log.prefix + ` ` + title
-	if log.alarm != nil {
-		log.alarm.Send(title, content)
+	title = l.prefix + ` ` + title
+	if l.alarm != nil {
+		l.alarm.Send(title, content)
 	}
 
 	os.Stderr.Write([]byte(titleLine))
