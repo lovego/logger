@@ -20,9 +20,13 @@ func New(writer io.Writer) *Logger {
 		writer = os.Stderr
 	}
 	return &Logger{
-		level: Error, writer: writer,
+		level: Info, writer: writer,
 		formatter: jsonFormatter, alarmFormatter: jsonIndentFormatter,
 	}
+}
+
+func (l *Logger) With(key string, value interface{}) *Fields {
+	return &Fields{logger: l, data: map[string]interface{}{key: value}}
 }
 
 func (l *Logger) Debug(args ...interface{}) bool {

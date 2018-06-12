@@ -22,5 +22,5 @@ type jsonIndentFmt struct {
 }
 
 func (jif jsonIndentFmt) Format(fields map[string]interface{}) ([]byte, error) {
-	return json.Marshal(fields)
+	return json.MarshalIndent(fields, "", "")
 }
