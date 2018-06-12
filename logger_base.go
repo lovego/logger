@@ -1,35 +1,10 @@
 package logger
 
-func (l *Logger) output(
-	level Level, msg string, fields map[string]interface{},
-) {
-	if fields == nil {
-		fields = make(map[string]interface{})
-	}
-	for k, v := range l.fields {
-		fields[k] = v
-	}
-	fields["at"] = Time.Now()
-	fields["level"] = level
-	fields["msg"] = msg
-
-	l.writer.Write(l.formatter.Format(fields))
-}
-
-func (l *Logger) SetLevel(level Level) *logger {
-	if level < Error {
-		level = Error
-	} else if level > Debug {
-		level = Debug
-	}
-	l.level = level
-	return l
-}
-
-func (l *Logger) SetAlarm(alarm Alarm) *logger {
-	l.alarm = alarm
-	return l
-}
+import (
+	"net"
+	"os"
+	"strings"
+)
 
 // Set a default field by key and value.
 // Don't use "at", "level", "msg", they will be overwritten.
@@ -62,6 +37,6 @@ func (l *Logger) SetIP() *Logger {
 
 // Set a default pid field
 func (l *Logger) SetPid() *Logger {
-	l.Fields["pid"] = os.Getpid()
+	l.fields["pid"] = os.Getpid()
 	return l
 }
