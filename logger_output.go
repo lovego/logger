@@ -10,17 +10,9 @@ import (
 func (l *Logger) output(
 	level Level, msg string, fields map[string]interface{},
 ) {
-	if fields == nil {
-		fields = make(map[string]interface{})
-	}
-	for k, v := range l.fields {
-		fields[k] = v
-	}
-	fields["at"] = time.Now()
-	fields["level"] = level.String()
-	fields["msg"] = msg
+	fields = l.getFields(level, msg, fields)
 
-	if l.alarm != nil && level <= Error {
+	if level <= Error && l.alarm != nil {
 		l.doAlarm(level, msg, fields)
 	}
 
@@ -33,9 +25,26 @@ func (l *Logger) output(
 	}
 }
 
+func (l *Logger) getFields(
+	level Level, msg string, fields map[string]interface{},
+) map[string]interface{} {
+	if fields == nil {
+		fields = make(map[string]interface{})
+	}
+	for k, v := range l.fields {
+		fields[k] = v
+	}
+	fields["at"] = time.Now()
+	fields["level"] = level.String()
+	fields["msg"] = msg
+
+	if level <= Error {
+		fields["stack"] = errs.Stack(5)
+	}
+	return fields
+}
+
 func (l *Logger) doAlarm(level Level, msg string, fields map[string]interface{}) {
-	stack := errs.Stack(4)
-	fields["stack"] = stack
 	content := l.format(fields, true)
 	if len(content) == 0 {
 		return
@@ -43,7 +52,7 @@ func (l *Logger) doAlarm(level Level, msg string, fields map[string]interface{})
 
 	switch level {
 	case Error:
-		mergeKey := msg + "\n" + stack // 根据title和调用栈对报警消息进行合并
+		mergeKey := msg + "\n" + fields["stack"].(string) // 根据msg和stack对报警消息进行合并
 		l.alarm.Alarm(msg, string(content), mergeKey)
 	case Fatal, Panic:
 		l.alarm.Send(msg, string(content))
