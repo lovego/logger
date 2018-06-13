@@ -39,7 +39,11 @@ func (l *Logger) getFields(
 	fields["msg"] = msg
 
 	if level <= Error {
-		fields["stack"] = errs.Stack(5)
+		if level == Recover {
+			fields["stack"] = errs.Stack(7)
+		} else {
+			fields["stack"] = errs.Stack(5)
+		}
 	}
 	return fields
 }
@@ -51,7 +55,7 @@ func (l *Logger) doAlarm(level Level, msg string, fields map[string]interface{})
 	}
 
 	switch level {
-	case Error:
+	case Recover, Error:
 		mergeKey := msg + "\n" + fields["stack"].(string) // 根据msg和stack对报警消息进行合并
 		l.alarm.Alarm(msg, string(content), mergeKey)
 	case Fatal, Panic:
@@ -94,6 +98,8 @@ func (l Level) String() string {
 		return "fatal"
 	case Panic:
 		return "panic"
+	case Recover:
+		return "recover"
 	case Error:
 		return "error"
 	case Info:

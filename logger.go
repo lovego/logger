@@ -9,6 +9,7 @@ import (
 const (
 	Fatal Level = iota
 	Panic
+	Recover
 	Error
 	Info
 	Debug
@@ -78,7 +79,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 
 func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		l.output(Panic, fmt.Sprintf("PANIC: %v", err), nil)
+		l.output(Recover, fmt.Sprintf("%v", err), nil)
 	}
 }
 
