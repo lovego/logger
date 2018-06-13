@@ -14,8 +14,3 @@ type Interface interface {
 	Debug(args ...interface{}) bool
 	Debugf(format string, args ...interface{})
 }
-
-type Alarm interface {
-	Send(title, content string)
-	Alarm(title, content, mergeKey string)
-}

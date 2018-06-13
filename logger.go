@@ -6,6 +6,15 @@ import (
 	"os"
 )
 
+const (
+	Fatal Level = iota
+	Panic
+	Error
+	Info
+	Debug
+)
+
+type Level int8
 type Logger struct {
 	level          Level
 	fields         map[string]interface{}
@@ -13,6 +22,10 @@ type Logger struct {
 	writer         io.Writer
 	alarmFormatter Formatter
 	alarm          Alarm
+}
+type Alarm interface {
+	Send(title, content string)
+	Alarm(title, content, mergeKey string)
 }
 
 func New(writer io.Writer) *Logger {
@@ -26,7 +39,7 @@ func New(writer io.Writer) *Logger {
 }
 
 func (l *Logger) With(key string, value interface{}) *Fields {
-	return &Fields{logger: l, data: map[string]interface{}{key: value}}
+	return &Fields{Logger: l, data: map[string]interface{}{key: value}}
 }
 
 func (l *Logger) Debug(args ...interface{}) bool {

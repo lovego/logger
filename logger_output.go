@@ -87,3 +87,20 @@ func (l *Logger) SetAlarm(alarm Alarm) *Logger {
 	l.alarm = alarm
 	return l
 }
+
+func (l Level) String() string {
+	switch l {
+	case Fatal:
+		return "fatal"
+	case Panic:
+		return "panic"
+	case Error:
+		return "error"
+	case Info:
+		return "info"
+	case Debug:
+		return "debug"
+	default:
+		return "invalid"
+	}
+}
