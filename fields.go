@@ -51,7 +51,7 @@ func (f *Fields) Errorf(format string, args ...interface{}) {
 
 func (f *Fields) Recover() {
 	if err := recover(); err != nil {
-		f.output(Panic, fmt.Sprintf("PANIC: %v", err), f.data)
+		f.output(Recover, fmt.Sprint(err), f.data)
 	}
 }
 
@@ -63,7 +63,7 @@ func (f *Fields) Panic(args ...interface{}) {
 
 func (f *Fields) Panicf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
-	f.output(Panic, msg, nil)
+	f.output(Panic, msg, f.data)
 	panic(msg)
 }
 

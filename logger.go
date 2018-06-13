@@ -79,7 +79,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 
 func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		l.output(Recover, fmt.Sprintf("%v", err), nil)
+		l.output(Recover, fmt.Sprint(err), nil)
 	}
 }
 
