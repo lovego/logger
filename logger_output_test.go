@@ -48,13 +48,26 @@ func TestGetFields(t *testing.T) {
 	}
 }
 
-func TestDoAlarm(t *testing.T) {
+func TestDoAlarm1(t *testing.T) {
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	logger := New(writer)
 	logger.SetAlarm(alarm)
 	logger.doAlarm(Panic, "", nil)
 	if alarm.title != `` || alarm.content != `null` {
 		t.Errorf("unexpect alarm %v", alarm)
+	}
+}
+
+func TestDoAlarm2(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	var mapIn = make(map[interface{}]interface{})
+	logger.doAlarm(Panic, "", map[string]interface{}{"test": mapIn})
+	if strings.Contains(writer.String(),
+		`,"level": "error",
+		"msg": "logger format: json: unsupported type: map[interface {}]interface {} map[test:map[]]",
+		"stack":`) {
+		t.Errorf("unexpect writer %v", writer.String())
 	}
 }
 
@@ -73,21 +86,17 @@ func TestFormat1(t *testing.T) {
 	}
 }
 
-// func TestFormat2(t *testing.T) {
-// 	writer := bytes.NewBuffer(nil)
-// 	logger := New(writer)
-// 	type testIn struct {
-// 		Id   int
-// 		Time time.Time
-// 	}
-// 	var test = testIn{Id: 1, Time: time.Now()}
-// 	var fields = make(map[string]interface{})
-// 	fields[`key`] = test
-// 	content := logger.format(fields, true)
-// 	if content != nil {
-// 		t.Errorf("unexpect content %s", string(content))
-// 	}
-// }
+func TestFormat2(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	var testIn = make(map[interface{}]interface{})
+	var fields = make(map[string]interface{})
+	fields[`key`] = testIn
+	content := logger.format(fields, true)
+	if content != nil {
+		t.Errorf("unexpect content %s", string(content))
+	}
+}
 
 func TestSetLevel(t *testing.T) {
 	logger := New(nil)
