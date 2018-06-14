@@ -36,6 +36,7 @@ func New(writer io.Writer) *Logger {
 	return &Logger{
 		level: Info, writer: writer,
 		formatter: jsonFormatter, alarmFormatter: jsonIndentFormatter,
+		fields: make(map[string]interface{}),
 	}
 }
 
