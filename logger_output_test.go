@@ -63,11 +63,9 @@ func TestDoAlarm2(t *testing.T) {
 	logger := New(writer)
 	var mapIn = make(map[interface{}]interface{})
 	logger.doAlarm(Panic, "", map[string]interface{}{"test": mapIn})
-	if strings.Contains(writer.String(),
-		`,"level": "error",
-		"msg": "logger format: json: unsupported type: map[interface {}]interface {} map[test:map[]]",
-		"stack":`) {
-		t.Errorf("unexpect writer %v", writer.String())
+	if !strings.Contains(writer.String(),
+		`"level":"error","msg":"logger format: json: unsupported type: map[interface {}]interface {}`) {
+		t.Errorf("unexpect writer %s", writer.String())
 	}
 }
 
