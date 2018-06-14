@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	// "time"
 )
 
 func TestOutput1(t *testing.T) {
@@ -57,7 +58,7 @@ func TestDoAlarm(t *testing.T) {
 	}
 }
 
-func TestFormat(t *testing.T) {
+func TestFormat1(t *testing.T) {
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	logger := New(writer)
 	logger.SetAlarm(alarm)
@@ -71,6 +72,22 @@ func TestFormat(t *testing.T) {
 		t.Errorf("unexpect got %v,string %s", got, string(got))
 	}
 }
+
+// func TestFormat2(t *testing.T) {
+// 	writer := bytes.NewBuffer(nil)
+// 	logger := New(writer)
+// 	type testIn struct {
+// 		Id   int
+// 		Time time.Time
+// 	}
+// 	var test = testIn{Id: 1, Time: time.Now()}
+// 	var fields = make(map[string]interface{})
+// 	fields[`key`] = test
+// 	content := logger.format(fields, true)
+// 	if content != nil {
+// 		t.Errorf("unexpect content %s", string(content))
+// 	}
+// }
 
 func TestSetLevel(t *testing.T) {
 	logger := New(nil)
