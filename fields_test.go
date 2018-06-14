@@ -13,7 +13,8 @@ func TestFieldsWith(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}`) {
+		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
@@ -23,7 +24,8 @@ func TestFieldsDebug(t *testing.T) {
 	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").
 		Debug(`the `, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}`) {
+		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
@@ -33,7 +35,8 @@ func TestFieldsDebugf(t *testing.T) {
 	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").
 		Debugf("%s %s", `the`, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}`) {
+		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
@@ -42,7 +45,8 @@ func TestFieldsInfo(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}`) {
+		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
@@ -51,7 +55,8 @@ func TestFieldsInfof(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Infof("%s %s", `the`, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}`) {
+		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }

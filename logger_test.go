@@ -33,8 +33,11 @@ func TestWith(t *testing.T) {
 	log := New(writer)
 	log.With("key", "value").Info(`the `, `message`)
 	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","level":"info","msg":"the message"}`) {
+		`,"key":"value","level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
+	} else {
+		t.Log(writer.String())
 	}
 }
 
@@ -44,7 +47,8 @@ func TestDebug(t *testing.T) {
 	log.SetAlarm(alarm)
 	log.SetLevel(Debug)
 	log.Debug(`the `, `message`)
-	if !strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}`) {
+	if !strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 	if *alarm != (testAlarm{}) {
@@ -58,7 +62,8 @@ func TestDebugf(t *testing.T) {
 	log.SetAlarm(alarm)
 	log.SetLevel(Debug)
 	log.Debugf("%s %s", `the`, `message`)
-	if !strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}`) {
+	if !strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 	if *alarm != (testAlarm{}) {
@@ -71,7 +76,8 @@ func TestInfo(t *testing.T) {
 	log := New(writer)
 	log.SetAlarm(alarm)
 	log.Info(`the `, `message`)
-	if !strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}`) {
+	if !strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 	if *alarm != (testAlarm{}) {
@@ -84,7 +90,8 @@ func TestInfof(t *testing.T) {
 	log := New(writer)
 	log.SetAlarm(alarm)
 	log.Infof("%s %s", `the`, `message`)
-	if !strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}`) {
+	if !strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}
+`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 	if *alarm != (testAlarm{}) {

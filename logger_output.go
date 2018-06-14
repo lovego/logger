@@ -21,6 +21,7 @@ func (l *Logger) output(
 	}
 	content := l.format(fields, false)
 	if len(content) > 0 {
+		content = append(content, '\n')
 		l.writer.Write(content)
 	}
 }
@@ -34,9 +35,13 @@ func (l *Logger) getFields(
 	for k, v := range l.fields {
 		fields[k] = v
 	}
-	fields["at"] = time.Now()
 	fields["level"] = level.String()
-	fields["msg"] = msg
+	if fields["at"] == nil {
+		fields["at"] = time.Now()
+	}
+	if msg != "" {
+		fields["msg"] = msg
+	}
 
 	if level <= Error {
 		if level == Recover {
