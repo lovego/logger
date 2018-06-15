@@ -38,7 +38,7 @@ func TestOutput3(t *testing.T) {
 	}
 }
 
-func TestGetFields(t *testing.T) {
+func TestGetFields1(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.fields = map[string]interface{}{"key": true, "key1": "value1"}
@@ -46,6 +46,34 @@ func TestGetFields(t *testing.T) {
 		got[`msg`] != `message` || got[`key`] != true || got[`key1`] != `value1` {
 		t.Errorf("unexpect got %v", got)
 	}
+}
+
+type testMess interface {
+	Error() string
+	Stack() string
+}
+type testInfo struct {
+	mess testMess
+}
+
+func TestGetFields2(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	var msg testInfo
+	msg.Error()
+	msg.Stock()
+	t.Errorf("test %v", msg.Error())
+	if got := logger.getFields(Error, msg, nil); got[`level`] != `error` {
+		t.Errorf("unexpect got %v", got)
+	}
+}
+
+func (i testInfo) Error() string {
+	return `error`
+}
+
+func (i testInfo) Stock() string {
+	return `stock`
 }
 
 func TestDoAlarm1(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"github.com/lovego/tracer"
 )
 
-func TestSpanFields(t *testing.T) {
+func TestWithSpan(t *testing.T) {
 	logger := New(nil)
 	var cSpan = []*tracer.Span{{At: time.Now()}}
 	var span = &tracer.Span{
@@ -17,7 +17,7 @@ func TestSpanFields(t *testing.T) {
 		Children: cSpan,
 		Tags:     map[string]interface{}{"key": "value"},
 	}
-	if got := logger.spanFields(span); got.Logger == nil {
+	if got := logger.WithSpan(span); got.Logger == nil {
 		t.Errorf("unexpect got Fields %v", got)
 	} else {
 		if _, ok := got.data[`at`]; !ok {
