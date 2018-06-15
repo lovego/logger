@@ -34,13 +34,20 @@ func New(writer io.Writer) *Logger {
 	if writer == nil {
 		writer = os.Stderr
 	}
+	var formatter Formatter
+	if writer == os.Stdout || writer == os.Stderr {
+		formatter = jsonIndentFormatter
+	} else {
+		formatter = jsonFormatter
+	}
 	return &Logger{
 		level: Info, writer: writer,
-		formatter: jsonFormatter, alarmFormatter: jsonIndentFormatter,
+		formatter: formatter, alarmFormatter: jsonIndentFormatter,
 		fields: make(map[string]interface{}),
 	}
 }
 
+// don't use (level, at, msg, stack) as key, they will be overwritten.
 func (l *Logger) With(key string, value interface{}) *Fields {
 	return &Fields{Logger: l, data: map[string]interface{}{key: value}}
 }
