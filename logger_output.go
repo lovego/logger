@@ -3,7 +3,6 @@ package logger
 import (
 	"fmt"
 	"os"
-	"reflect"
 	"time"
 
 	"github.com/lovego/errs"
@@ -46,7 +45,6 @@ func (l *Logger) getFields(
 	}
 
 	if level <= Error {
-		fmt.Println(reflect.TypeOf(msg))
 		if err, ok := msg.(interface {
 			Error() string
 			Stack() string

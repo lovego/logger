@@ -1,11 +1,12 @@
 package logger
 
 import (
-	// "bytes"
-	// "context"
+	"bytes"
+	"context"
 	"testing"
 	"time"
 
+	"github.com/lovego/errs"
 	"github.com/lovego/tracer"
 )
 
@@ -38,10 +39,33 @@ func TestWithSpan(t *testing.T) {
 	}
 }
 
-// func TestRecord(t *testing.T) {
-//  writer := bytes.NewBuffer(nil)
-//  logger := New(writer)
-//  logger.Record(true, func(ctx context.Context) error {
-//    return context.Background()
-//  })
-// }
+func TestRecord1(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	logger.Record(true, nil, func() {}, func(*Fields) {})
+	if writer.String() == `` {
+		t.Errorf("test %s", writer.String())
+	}
+}
+
+func TestRecord2(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	logger.Record(true, func(ctx context.Context) error {
+		return errs.New("code", "message")
+	}, nil, nil)
+	if writer.String() == `` {
+		t.Errorf("test %s", writer.String())
+	}
+}
+
+func TestRecord3(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	logger.Record(false, func(ctx context.Context) error {
+		return nil
+	}, nil, nil)
+	if writer.String() == `` {
+		t.Errorf("test %s", writer.String())
+	}
+}

@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 	// "time"
+
+	"github.com/lovego/errs"
 )
 
 func TestOutput1(t *testing.T) {
@@ -48,32 +50,13 @@ func TestGetFields1(t *testing.T) {
 	}
 }
 
-type testMess interface {
-	Error() string
-	Stack() string
-}
-type testInfo struct {
-	mess testMess
-}
-
 func TestGetFields2(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	var msg testInfo
-	msg.Error()
-	msg.Stock()
-	t.Errorf("test %v", msg.Error())
-	if got := logger.getFields(Error, msg, nil); got[`level`] != `error` {
+	if got := logger.getFields(Error,
+		errs.Trace(errs.New("code", "message")), nil); got[`level`] != `error` {
 		t.Errorf("unexpect got %v", got)
 	}
-}
-
-func (i testInfo) Error() string {
-	return `error`
-}
-
-func (i testInfo) Stock() string {
-	return `stock`
 }
 
 func TestDoAlarm1(t *testing.T) {
