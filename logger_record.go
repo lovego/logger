@@ -28,11 +28,11 @@ func (l *Logger) Record(
 		}
 
 		if panicErr != nil {
-			f.output(Recover, panicErr, nil)
+			f.output(Recover, panicErr, f.data)
 		} else if err != nil {
-			f.output(Error, err, nil)
+			f.output(Error, err, f.data)
 		} else {
-			f.output(Info, nil, nil)
+			f.output(Info, nil, f.data)
 		}
 	}()
 	err = workFunc(tracer.Context(context.Background(), span))
