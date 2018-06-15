@@ -1,6 +1,8 @@
 package logger
 
 import (
+	// "bytes"
+	// "context"
 	"testing"
 	"time"
 
@@ -36,7 +38,10 @@ func TestSpanFields(t *testing.T) {
 	}
 }
 
-func TestRecord(t *testing.T) {
-	logger := New(nil)
-
-}
+// func TestRecord(t *testing.T) {
+//  writer := bytes.NewBuffer(nil)
+//  logger := New(writer)
+//  logger.Record(true, func(ctx context.Context) error {
+//    return context.Background()
+//  })
+// }
