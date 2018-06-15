@@ -12,7 +12,7 @@ import (
 func TestOutput1(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).output(Info, "message", map[string]interface{}{"key": "value"})
-	if !strings.HasSuffix(writer.String(),
+	if !strings.Contains(writer.String(),
 		`,"key":"value","level":"info","msg":"message"}`) {
 		t.Errorf("unexpect output: %s", writer.String())
 	}
