@@ -7,30 +7,31 @@ import (
 
 func TestSet(t *testing.T) {
 	logger := New(nil)
-	if got := logger.Set("key", "value"); !reflect.DeepEqual(got.fields, map[string]interface{}{"key": "value"}) {
-		t.Errorf("unexpect got fields %v", got.fields)
+	if logger.Set("key", "value"); !reflect.DeepEqual(logger.fields,
+		map[string]interface{}{"key": "value"}) {
+		t.Errorf("unexpected logger fields %v", logger.fields)
 	}
 }
 
 func TestSethostname(t *testing.T) {
 	logger := New(nil)
-	got := logger.SetHostname()
-	if _, ok := got.fields["hostname"]; !ok {
-		t.Errorf("test %v", got)
+	logger.SetHostname()
+	if _, ok := logger.fields["hostname"]; !ok {
+		t.Errorf("unexpected logger %v", logger)
 	}
 }
 func TestSetIP(t *testing.T) {
 	logger := New(nil)
-	got := logger.SetIP()
-	if _, ok := got.fields["ip"]; !ok {
-		t.Errorf("test %v", got)
+	logger.SetIP()
+	if _, ok := logger.fields["ip"]; !ok {
+		t.Errorf("unexpected logger %v", logger)
 	}
 }
 
 func TestSetPid(t *testing.T) {
 	logger := New(nil)
-	got := logger.SetPid()
-	if _, ok := got.fields["pid"]; !ok {
-		t.Errorf("test %v", got)
+	logger.SetPid()
+	if _, ok := logger.fields["pid"]; !ok {
+		t.Errorf("unexpected logger %v", logger)
 	}
 }
