@@ -1,13 +1,9 @@
 package logger
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
-	"time"
-
-	"github.com/lovego/tracer"
 )
 
 const (
@@ -47,37 +43,6 @@ func New(writer io.Writer) *Logger {
 
 func (l *Logger) With(key string, value interface{}) *Fields {
 	return &Fields{Logger: l, data: map[string]interface{}{key: value}}
-}
-
-func (l *Logger) Record(debug bool, fun func(ctx context.Context) error) {
-	span := &tracer.Span{At: time.Now()}
-	if debug {
-		span.SetDebug(true)
-	}
-	var err error
-	defer func() {
-		f := l.spanFields(span)
-		if ret := recover(); ret != nil {
-			f.output(Recover, fmt.Sprint(ret), nil)
-		} else if err == nil {
-			f.output(Info, "", nil)
-		} else {
-			f.output(Error, err.Error(), nil)
-		}
-	}()
-	err = fun(context.Background())
-}
-
-func (l *Logger) spanFields(span *tracer.Span) *Fields {
-	span.Finish()
-	f := l.With("at", span.At).With("duration", span.Duration)
-	if len(span.Children) > 0 {
-		f = f.With("children", span.Children)
-	}
-	if len(span.Tags) > 0 {
-		f = f.With("tags", span.Tags)
-	}
-	return f
 }
 
 func (l *Logger) Debug(args ...interface{}) bool {

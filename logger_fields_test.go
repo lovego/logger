@@ -7,8 +7,7 @@ import (
 
 func TestSet(t *testing.T) {
 	logger := New(nil)
-	if got := logger.Set("key",
-		"value"); !reflect.DeepEqual(got.fields, map[string]interface{}{"key": "value"}) {
+	if got := logger.Set("key", "value"); !reflect.DeepEqual(got.fields, map[string]interface{}{"key": "value"}) {
 		t.Errorf("unexpect got fields %v", got.fields)
 	}
 }

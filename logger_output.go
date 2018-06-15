@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -8,12 +9,12 @@ import (
 )
 
 func (l *Logger) output(
-	level Level, msg string, fields map[string]interface{},
+	level Level, msg interface{}, fields map[string]interface{},
 ) {
 	fields = l.getFields(level, msg, fields)
 
 	if level <= Error && l.alarm != nil {
-		l.doAlarm(level, msg, fields)
+		l.doAlarm(level, fields)
 	}
 
 	if level == Panic && l.writer == os.Stderr {
@@ -27,7 +28,7 @@ func (l *Logger) output(
 }
 
 func (l *Logger) getFields(
-	level Level, msg string, fields map[string]interface{},
+	level Level, msg interface{}, fields map[string]interface{},
 ) map[string]interface{} {
 	if fields == nil {
 		fields = make(map[string]interface{})
@@ -39,12 +40,17 @@ func (l *Logger) getFields(
 	if fields["at"] == nil {
 		fields["at"] = time.Now()
 	}
-	if msg != "" {
-		fields["msg"] = msg
+	if msg != nil {
+		fields["msg"] = fmt.Sprint(msg)
 	}
 
 	if level <= Error {
-		if level == Recover {
+		if err, ok := msg.(interface {
+			Error() string
+			Stack() string
+		}); ok {
+			fields["stack"] = err.Stack()
+		} else if level == Recover {
 			fields["stack"] = errs.Stack(7)
 		} else {
 			fields["stack"] = errs.Stack(5)
@@ -53,12 +59,12 @@ func (l *Logger) getFields(
 	return fields
 }
 
-func (l *Logger) doAlarm(level Level, msg string, fields map[string]interface{}) {
+func (l *Logger) doAlarm(level Level, fields map[string]interface{}) {
 	content := l.format(fields, true)
 	if len(content) == 0 {
 		return
 	}
-
+	msg, _ := fields["msg"].(string)
 	switch level {
 	case Recover, Error:
 		mergeKey := msg + "\n" + fields["stack"].(string) // 根据msg和stack对报警消息进行合并
