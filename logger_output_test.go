@@ -52,7 +52,7 @@ func TestDoAlarm1(t *testing.T) {
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	logger := New(writer)
 	logger.SetAlarm(alarm)
-	logger.doAlarm(Panic, "", nil)
+	logger.doAlarm(Panic, nil)
 	if alarm.title != `` || alarm.content != `null` {
 		t.Errorf("unexpect alarm %v", alarm)
 	}
@@ -62,7 +62,7 @@ func TestDoAlarm2(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	var mapIn = make(map[interface{}]interface{})
-	logger.doAlarm(Panic, "", map[string]interface{}{"test": mapIn})
+	logger.doAlarm(Panic, map[string]interface{}{"test": mapIn})
 	if !strings.Contains(writer.String(),
 		`"level":"error","msg":"logger format: json: unsupported type: map[interface {}]interface {}`) {
 		t.Errorf("unexpect writer %s", writer.String())
