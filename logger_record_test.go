@@ -3,6 +3,8 @@ package logger
 import (
 	"bytes"
 	"context"
+	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,39 +14,37 @@ import (
 
 func TestWithSpan(t *testing.T) {
 	logger := New(nil)
-	var cSpan = []*tracer.Span{{At: time.Now()}}
 	var span = &tracer.Span{
 		At:       time.Now(),
-		Children: cSpan,
+		Children: []*tracer.Span{{At: time.Now()}},
 		Tags:     map[string]interface{}{"key": "value"},
 	}
-	if got := logger.WithSpan(span); got.Logger == nil {
-		t.Errorf("unexpect got Fields %v", got)
-	} else {
-		if _, ok := got.data[`at`]; !ok {
-			t.Errorf("field not be seted %v", got.data)
-		}
-
-		if _, ok := got.data[`duration`]; !ok {
-			t.Errorf("field not be seted %v", got.data)
-		}
-
-		if _, ok := got.data[`children`]; !ok {
-			t.Errorf("field not be seted %v", got.data)
-		}
-
-		if _, ok := got.data[`tags`]; !ok {
-			t.Errorf("field not be seted %v", got.data)
-		}
+	got := logger.WithSpan(span)
+	expect := &Fields{
+		Logger: logger,
+		data: map[string]interface{}{
+			"at": span.At, "duration": span.Duration,
+			"children": span.Children, "tags": span.Tags,
+		},
+	}
+	if !reflect.DeepEqual(got, expect) {
+		t.Errorf("unexpected got: %+v", got)
 	}
 }
 
 func TestRecord1(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	logger.Record(true, nil, func() {}, func(*Fields) {})
-	if writer.String() == `` {
-		t.Errorf("test %s", writer.String())
+	logger.Record(true, func(ctx context.Context) error {
+		panic("the message")
+	}, func() {}, func(f *Fields) {
+		f.With("key", "value")
+	})
+	if !strings.Contains(writer.String(),
+		`"key":"value","level":"recover","msg":"the message",`+
+			`"stack":"github.com/lovego/logger.TestRecord1.func1\n\t`,
+	) {
+		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
 
@@ -54,8 +54,11 @@ func TestRecord2(t *testing.T) {
 	logger.Record(true, func(ctx context.Context) error {
 		return errs.New("code", "message")
 	}, nil, nil)
-	if writer.String() == `` {
-		t.Errorf("test %s", writer.String())
+	if !strings.Contains(writer.String(),
+		`,"level":"error","msg":"the message",`+
+			`"stack":"github.com/lovego/logger.TestRecord2.func1\n\t`,
+	) {
+		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
 
@@ -65,7 +68,7 @@ func TestRecord3(t *testing.T) {
 	logger.Record(false, func(ctx context.Context) error {
 		return nil
 	}, nil, nil)
-	if writer.String() == `` {
-		t.Errorf("test %s", writer.String())
+	if !strings.Contains(writer.String(), `,"level":"info"}`) {
+		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
