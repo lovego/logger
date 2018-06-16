@@ -54,15 +54,27 @@ func TestRecord2(t *testing.T) {
 	logger.Record(true, func(ctx context.Context) error {
 		return errs.New("code", "message")
 	}, nil, nil)
-	if !strings.Contains(writer.String(),
-		`,"level":"error","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestRecord2.func1\n\t`,
-	) {
+	if !strings.Contains(writer.String(), `,"level":"error","msg":"code: message",`+
+		`"stack":"github.com/lovego/logger.(*Logger).Record\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
 
 func TestRecord3(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	logger.Record(true, func(ctx context.Context) error {
+		return errs.Tracef("the message")
+	}, nil, nil)
+	if !strings.Contains(writer.String(),
+		`,"level":"error","msg":"the message",`+
+			`"stack":"github.com/lovego/logger.TestRecord3.func1\n\t`,
+	) {
+		t.Errorf("unexpected output: %s", writer.String())
+	}
+}
+
+func TestRecord4(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(false, func(ctx context.Context) error {

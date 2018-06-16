@@ -48,7 +48,7 @@ func (l *Logger) getFields(
 		if err, ok := msg.(interface {
 			Error() string
 			Stack() string
-		}); ok {
+		}); ok && err.Stack() != "" {
 			fields["stack"] = err.Stack()
 		} else if level == Recover {
 			fields["stack"] = errs.Stack(7)
