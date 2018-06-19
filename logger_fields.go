@@ -17,14 +17,14 @@ func (l *Logger) Set(key string, value interface{}) *Logger {
 }
 
 // Set a default hostname field
-func (l *Logger) SetHostname() *Logger {
+func (l *Logger) SetMachineName() *Logger {
 	hostname, _ := os.Hostname()
-	l.fields["hostname"] = hostname
+	l.fields["machineName"] = hostname
 	return l
 }
 
 // Set a default ip field
-func (l *Logger) SetIP() *Logger {
+func (l *Logger) SetMachineIP() *Logger {
 	addrs, _ := net.InterfaceAddrs()
 	slice := []string{}
 	for _, addr := range addrs {
@@ -34,7 +34,7 @@ func (l *Logger) SetIP() *Logger {
 			slice = append(slice, ip)
 		}
 	}
-	l.fields["ip"] = slice
+	l.fields["machineIP"] = slice
 	return l
 }
 

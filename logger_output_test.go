@@ -3,20 +3,20 @@ package logger
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
-	// "time"
 
 	"github.com/lovego/errs"
 )
 
 func TestOutput1(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
-	New(writer).output(Info, "message", map[string]interface{}{"key": "value"})
-	if !strings.Contains(writer.String(),
-		`,"key":"value","level":"info","msg":"message"}`) {
-		t.Errorf("unexpect output: %s", writer.String())
+	New(writer).SetPid().output(Info, "message", map[string]interface{}{"key": "value"})
+	expect := fmt.Sprintf(`,"key":"value","level":"info","msg":"message","pid":%d}`, os.Getpid())
+	if !strings.Contains(writer.String(), expect) {
+		t.Errorf("\nexpect: %s\n   got: %s", expect, writer.String())
 	}
 }
 

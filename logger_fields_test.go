@@ -1,7 +1,11 @@
 package logger
 
 import (
+	"bytes"
+	"fmt"
+	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -13,17 +17,30 @@ func TestSet(t *testing.T) {
 	}
 }
 
-func TestSethostname(t *testing.T) {
-	logger := New(nil)
-	logger.SetHostname()
-	if _, ok := logger.fields["hostname"]; !ok {
+func TestSetMachineName(t *testing.T) {
+	writer := bytes.NewBuffer(nil)
+	logger := New(writer)
+	logger.SetMachineName()
+	if _, ok := logger.fields["machineName"]; !ok {
 		t.Errorf("unexpected logger %v", logger)
 	}
+	logger.Info("the message")
+
+	hostname, _ := os.Hostname()
+	expect := fmt.Sprintf(`"level":"info","machineName":"%s","msg":"the message"}
+`, hostname)
+
+	if !strings.HasSuffix(writer.String(), expect) {
+		t.Errorf("unexpected output: %s", writer.String())
+	} else {
+		t.Log(writer.String())
+	}
 }
-func TestSetIP(t *testing.T) {
+
+func TestSetMachineIP(t *testing.T) {
 	logger := New(nil)
-	logger.SetIP()
-	if _, ok := logger.fields["ip"]; !ok {
+	logger.SetMachineIP()
+	if _, ok := logger.fields["machineIP"]; !ok {
 		t.Errorf("unexpected logger %v", logger)
 	}
 }
