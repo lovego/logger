@@ -30,6 +30,13 @@ logger.Fatal("fatal !!")
 logger.Fatalf("test %s", "fatalf")
 
 defer logger.Recover()
+
+logger.Record(os.Getenv("debug") != "", func(ctx context.Context) error {
+  // work to do goes here
+  return nil
+}, nil, func(f *Fields) {
+  f.With("key1", "value1").With("key2", "value2")
+})
 ```
 
 ## Documentation
