@@ -10,6 +10,7 @@ type Fields struct {
 	data map[string]interface{}
 }
 
+// don't use (level, at, msg, stack, duration) as key, they will be overwritten.
 func (f *Fields) With(key string, value interface{}) *Fields {
 	f.data[key] = value
 	return f

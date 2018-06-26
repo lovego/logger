@@ -7,7 +7,7 @@ import (
 )
 
 // Set a default field by key and value.
-// Don't use "at", "level", "msg", they will be overwritten.
+// Don't use "level", "at", "msg", "stack", "duration" they will be overwritten.
 func (l *Logger) Set(key string, value interface{}) *Logger {
 	// if l.fields == nil {
 	// 	l.fields = make(map[string]interface{})

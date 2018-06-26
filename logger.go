@@ -47,7 +47,7 @@ func New(writer io.Writer) *Logger {
 	}
 }
 
-// don't use (level, at, msg, stack) as key, they will be overwritten.
+// don't use (level, at, msg, stack, duration) as key, they will be overwritten.
 func (l *Logger) With(key string, value interface{}) *Fields {
 	return &Fields{Logger: l, data: map[string]interface{}{key: value}}
 }
