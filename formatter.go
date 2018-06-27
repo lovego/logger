@@ -32,7 +32,7 @@ func (jif readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return append([]byte(fmt.Sprintf("msg: %v\nstack: %v\n", msg, stack)), buf...), nil
+		return append([]byte(fmt.Sprintf("%v\n%v\n", msg, stack)), buf...), nil
 	}
 	return json.MarshalIndent(fields, "", "  ")
 }

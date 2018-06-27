@@ -108,8 +108,8 @@ func TestError(t *testing.T) {
 		`"level":"error","msg":"the message","stack":"github.com/lovego/logger.TestError\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
-	if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestError
+	if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestError
 `) || !strings.Contains(alarm.content, `"level": "error"`) {
 		t.Errorf("unexpected alarm: %#v", *alarm)
 	}
@@ -124,8 +124,8 @@ func TestErrorf(t *testing.T) {
 		`"level":"error","msg":"the message","stack":"github.com/lovego/logger.TestErrorf\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
-	if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestErrorf
+	if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestErrorf
 `) || !strings.Contains(alarm.content, `"level": "error"`) {
 		t.Errorf("unexpected alarm: %#v", *alarm)
 	}
@@ -143,8 +143,8 @@ func TestRecover(t *testing.T) {
 		`"level":"recover","msg":"the message","stack":"github.com/lovego/logger.TestRecover.func1\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
-	if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestRecover.func1
+	if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestRecover.func1
 `) || !strings.Contains(alarm.content, `"level": "recover"`) {
 		t.Errorf("unexpected alarm: %#v", *alarm)
 	}
@@ -163,8 +163,8 @@ func TestPanic(t *testing.T) {
 			`"level":"panic","msg":"the message","stack":"github.com/lovego/logger.TestPanic\n\t`) {
 			t.Errorf("unexpected output: %s", writer.String())
 		}
-		if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestPanic
+		if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestPanic
 `) || !strings.Contains(alarm.content, `"level": "panic"`) {
 			t.Errorf("unexpected alarm: %#v", *alarm)
 		}
@@ -185,8 +185,8 @@ func TestPanicf(t *testing.T) {
 			`"level":"panic","msg":"the message","stack":"github.com/lovego/logger.TestPanicf\n\t`) {
 			t.Errorf("unexpected output: %s", writer.String())
 		}
-		if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestPanicf
+		if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestPanicf
 `) || !strings.Contains(alarm.content, `"level": "panic"`) {
 			t.Errorf("unexpected alarm: %#v", *alarm)
 		}
@@ -212,8 +212,8 @@ func TestFatal(t *testing.T) {
 		`"level":"fatal","msg":"the message","stack":"github.com/lovego/logger.TestFatal\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
-	if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestFatal
+	if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestFatal
 `) || !strings.Contains(alarm.content, `"level": "fatal"`) {
 		t.Errorf("unexpected alarm: %#v", *alarm)
 	}
@@ -237,8 +237,8 @@ func TestFatalf(t *testing.T) {
 		`"level":"fatal","msg":"the message","stack":"github.com/lovego/logger.TestFatalf\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
-	if alarm.title != "the message" || !strings.Contains(alarm.content, `msg: the message
-stack: github.com/lovego/logger.TestFatalf
+	if alarm.title != "the message" || !strings.Contains(alarm.content, `the message
+github.com/lovego/logger.TestFatalf
 `) || !strings.Contains(alarm.content, `"level": "fatal"`) {
 		t.Errorf("unexpected alarm: %#v", *alarm)
 	}
