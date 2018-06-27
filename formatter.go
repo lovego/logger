@@ -2,10 +2,11 @@ package logger
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 var jsonFormatter jsonFmt
-var jsonIndentFormatter jsonIndentFmt
+var readableFormatter readableFmt
 
 type Formatter interface {
 	Format(map[string]interface{}) ([]byte, error)
@@ -18,9 +19,20 @@ func (jf jsonFmt) Format(fields map[string]interface{}) ([]byte, error) {
 	return json.Marshal(fields)
 }
 
-type jsonIndentFmt struct {
+type readableFmt struct {
 }
 
-func (jif jsonIndentFmt) Format(fields map[string]interface{}) ([]byte, error) {
-	return json.MarshalIndent(fields, "", "")
+func (jif readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
+	msg, stack := fields["msg"], fields["stack"]
+	if msg != nil || stack != nil {
+		delete(fields, "msg")
+		delete(fields, "stack")
+		buf, err := json.MarshalIndent(fields, "", "  ")
+		fields["msg"], fields["stack"] = msg, stack
+		if err != nil {
+			return nil, err
+		}
+		return append([]byte(fmt.Sprintf("msg: %v\nstack: %v\n", msg, stack)), buf...), nil
+	}
+	return json.MarshalIndent(fields, "", "  ")
 }

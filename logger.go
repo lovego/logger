@@ -36,13 +36,13 @@ func New(writer io.Writer) *Logger {
 	}
 	var formatter Formatter
 	if writer == os.Stdout || writer == os.Stderr {
-		formatter = jsonIndentFormatter
+		formatter = readableFormatter
 	} else {
 		formatter = jsonFormatter
 	}
 	return &Logger{
 		level: Info, writer: writer,
-		formatter: formatter, alarmFormatter: jsonIndentFormatter,
+		formatter: formatter, alarmFormatter: readableFormatter,
 		fields: make(map[string]interface{}),
 	}
 }

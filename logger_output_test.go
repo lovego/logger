@@ -85,13 +85,13 @@ func TestFormat1(t *testing.T) {
 	logger := New(writer)
 	logger.SetAlarm(alarm)
 	var expectMap = map[string]interface{}{"key": true}
-	expect, err := json.MarshalIndent(expectMap, ``, ``)
+	expect, err := json.MarshalIndent(expectMap, ``, `  `)
 	if err != nil {
 		t.Errorf("unexpect marshal err %v", err)
 	}
-	if got := logger.format(map[string]interface{}{"key": true},
-		true); string(got) != string(expect) {
-		t.Errorf("unexpect got %v,string %s", got, string(got))
+	got := logger.format(map[string]interface{}{"key": true}, true)
+	if string(got) != string(expect) {
+		t.Errorf("unexpected got: %s", got)
 	}
 }
 
