@@ -19,12 +19,14 @@ func TestWithSpan(t *testing.T) {
 		Children: []*tracer.Span{{At: time.Now()}},
 		Tags:     map[string]interface{}{"key": "value"},
 	}
+	span.Log("the ", "message")
 	got := logger.WithSpan(span)
 	expect := &Fields{
 		Logger: logger,
 		data: map[string]interface{}{
 			"at": span.At, "duration": span.Duration,
 			"children": span.Children, "tags": span.Tags,
+			"logs": []string{"the message"},
 		},
 	}
 	if !reflect.DeepEqual(got, expect) {
