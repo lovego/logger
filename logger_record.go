@@ -47,5 +47,8 @@ func (l *Logger) WithSpan(span *tracer.Span) *Fields {
 	if len(span.Tags) > 0 {
 		f = f.With("tags", span.Tags)
 	}
+	if len(span.Logs) > 0 {
+		f = f.With("logs", span.Logs)
+	}
 	return f
 }
