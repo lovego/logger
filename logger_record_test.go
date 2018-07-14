@@ -80,9 +80,16 @@ func TestRecord4(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(false, func(ctx context.Context) error {
+		tracer.Tag(ctx, "tagKey", "tagValue")
+		span := tracer.StartSpan(ctx, "test")
+		span.Tag("tagK", "tagV")
+		defer span.Finish()
 		return nil
 	}, nil, nil)
-	if !strings.Contains(writer.String(), `,"level":"info"}`) {
+	s := writer.String()
+	if !strings.Contains(s, `,"children":[{"name":"test","at":`) ||
+		!strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`) ||
+		!strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
