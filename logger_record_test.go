@@ -19,12 +19,14 @@ func TestWithSpan(t *testing.T) {
 		Children: []*tracer.Span{{At: time.Now()}},
 		Tags:     map[string]interface{}{"key": "value"},
 	}
+	span.Log("the ", "message")
 	got := logger.WithSpan(span)
 	expect := &Fields{
 		Logger: logger,
 		data: map[string]interface{}{
 			"at": span.At, "duration": span.Duration,
 			"children": span.Children, "tags": span.Tags,
+			"logs": []string{"the message"},
 		},
 	}
 	if !reflect.DeepEqual(got, expect) {
@@ -78,9 +80,16 @@ func TestRecord4(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(false, func(ctx context.Context) error {
+		tracer.Tag(ctx, "tagKey", "tagValue")
+		span := tracer.StartSpan(ctx, "test")
+		span.Tag("tagK", "tagV")
+		defer span.Finish()
 		return nil
 	}, nil, nil)
-	if !strings.Contains(writer.String(), `,"level":"info"}`) {
+	s := writer.String()
+	if !strings.Contains(s, `,"children":[{"name":"test","at":`) ||
+		!strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`) ||
+		!strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
