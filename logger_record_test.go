@@ -37,7 +37,7 @@ func TestWithSpan(t *testing.T) {
 func TestRecord1(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	logger.Record(true, func(ctx context.Context) error {
+	logger.Record(func(ctx context.Context) error {
 		panic("the message")
 	}, func() {}, func(f *Fields) {
 		f.With("key", "value")
@@ -53,11 +53,11 @@ func TestRecord1(t *testing.T) {
 func TestRecord2(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	logger.Record(true, func(ctx context.Context) error {
+	logger.Record(func(ctx context.Context) error {
 		return errs.New("code", "message")
 	}, nil, nil)
 	if !strings.Contains(writer.String(), `,"level":"error","msg":"code: message",`+
-		`"stack":"github.com/lovego/logger.(*Logger).Record\n\t`) {
+		`"stack":"github.com/lovego/logger.(*Logger).RecordWithContext\n\t`) {
 		t.Errorf("unexpected output: %s", writer.String())
 	}
 }
@@ -65,7 +65,7 @@ func TestRecord2(t *testing.T) {
 func TestRecord3(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	logger.Record(true, func(ctx context.Context) error {
+	logger.Record(func(ctx context.Context) error {
 		return errs.Tracef("the message")
 	}, nil, nil)
 	if !strings.Contains(writer.String(),
@@ -79,7 +79,7 @@ func TestRecord3(t *testing.T) {
 func TestRecord4(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
-	logger.Record(false, func(ctx context.Context) error {
+	logger.Record(func(ctx context.Context) error {
 		tracer.Tag(ctx, "tagKey", "tagValue")
 		span := tracer.StartSpan(ctx, "test")
 		span.Tag("tagK", "tagV")

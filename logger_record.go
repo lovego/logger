@@ -8,13 +8,16 @@ import (
 )
 
 func (l *Logger) Record(
-	debug bool, workFunc func(ctx context.Context) error,
-	recoverFunc func(), fieldsFunc func(*Fields),
+	workFunc func(context.Context) error, recoverFunc func(), fieldsFunc func(*Fields),
+) {
+	l.RecordWithContext(context.Background(), workFunc, recoverFunc, fieldsFunc)
+}
+
+func (l *Logger) RecordWithContext(ctx context.Context,
+	workFunc func(context.Context) error, recoverFunc func(), fieldsFunc func(*Fields),
 ) {
 	span := &tracer.Span{At: time.Now()}
-	if debug {
-		span.SetDebug(true)
-	}
+	ctx = tracer.Context(ctx, span)
 	var err error
 	defer func() {
 		panicErr := recover()
@@ -35,7 +38,7 @@ func (l *Logger) Record(
 			f.output(Info, nil, f.data)
 		}
 	}()
-	err = workFunc(tracer.Context(context.Background(), span))
+	err = workFunc(ctx)
 }
 
 func (l *Logger) WithSpan(span *tracer.Span) *Fields {

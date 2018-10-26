@@ -91,9 +91,6 @@ func (l *Logger) Recover() {
 		l.output(Recover, fmt.Sprint(err), nil)
 	}
 }
-func (l *Logger) Recovery(args ...interface{}) {
-	l.output(Recover, fmt.Sprint(args...), nil)
-}
 
 func (l *Logger) Panic(args ...interface{}) {
 	msg := fmt.Sprint(args...)
