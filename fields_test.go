@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bouk/monkey"
+	"bou.ke/monkey"
 )
 
 func TestFieldsWith(t *testing.T) {
