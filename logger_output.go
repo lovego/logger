@@ -22,7 +22,6 @@ func (l *Logger) output(
 	}
 	content := l.format(fields, false)
 	if len(content) > 0 {
-		content = append(content, '\n')
 		l.writer.Write(content)
 	}
 }

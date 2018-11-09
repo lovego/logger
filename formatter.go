@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -16,23 +17,34 @@ type jsonFmt struct {
 }
 
 func (jf jsonFmt) Format(fields map[string]interface{}) ([]byte, error) {
-	return json.Marshal(fields)
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(fields); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 type readableFmt struct {
 }
 
 func (jif readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "  ")
+
 	msg, stack := fields["msg"], fields["stack"]
 	if msg != nil || stack != nil {
 		delete(fields, "msg")
 		delete(fields, "stack")
-		buf, err := json.MarshalIndent(fields, "", "  ")
-		fields["msg"], fields["stack"] = msg, stack
+		err := encoder.Encode(fields)
 		if err != nil {
 			return nil, err
 		}
-		return append([]byte(fmt.Sprintf("%v\n%v\n", msg, stack)), buf...), nil
+		fields["msg"], fields["stack"] = msg, stack
+		return append([]byte(fmt.Sprintf("%v\n%v\n", msg, stack)), buf.Bytes()...), nil
 	}
 	return json.MarshalIndent(fields, "", "  ")
 }
