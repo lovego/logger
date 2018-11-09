@@ -1,8 +1,8 @@
 # logger
 a logger that integrate with alarm.
 
-[![Build Status](https://travis-ci.org/lovego/logger.svg?branch=new_json)](https://travis-ci.org/lovego/logger)
-[![Coverage Status](https://img.shields.io/coveralls/github/lovego/logger/master.svg)](https://coveralls.io/github/lovego/logger?branch=new_json)
+[![Build Status](https://travis-ci.org/lovego/logger.svg?branch=master)](https://travis-ci.org/lovego/logger)
+[![Coverage Status](https://img.shields.io/coveralls/github/lovego/logger/master.svg)](https://coveralls.io/github/lovego/logger?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lovego/logger)](https://goreportcard.com/report/github.com/lovego/logger)
 [![GoDoc](https://godoc.org/github.com/lovego/logger?status.svg)](https://godoc.org/github.com/lovego/logger)
 
