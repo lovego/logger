@@ -31,7 +31,7 @@ logger.Fatalf("test %s", "fatalf")
 
 defer logger.Recover()
 
-logger.Record(os.Getenv("debug") != "", func(ctx context.Context) error {
+logger.Record(func(ctx context.Context) error {
   // work to do goes here
   return nil
 }, nil, func(f *Fields) {
