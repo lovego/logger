@@ -3,6 +3,8 @@ package logger
 import (
 	"fmt"
 	"os"
+
+	"github.com/lovego/errs"
 )
 
 type Fields struct {
@@ -58,7 +60,7 @@ func (f *Fields) Errorf(format string, args ...interface{}) {
 
 func (f *Fields) Recover() {
 	if err := recover(); err != nil {
-		setStackField(f.data, recoverStackSkip, err)
+		setStackField(f.data, 4+errs.PanicStackDepth(), err)
 		f.output(Recover, fmt.Sprint(err), f.data)
 	}
 }

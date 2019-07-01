@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/lovego/errs"
 )
 
 const (
@@ -88,7 +90,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 
 func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		l.output(Recover, fmt.Sprint(err), getStackField(recoverStackSkip, err))
+		l.output(Recover, fmt.Sprint(err), getStackField(4+errs.PanicStackDepth(), err))
 	}
 }
 

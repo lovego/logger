@@ -41,7 +41,6 @@ func ExampleLogger_Record_1() {
 	}, func() {}, func(f *Fields) {
 		f.With("key", "value")
 	})
-	println(writer.String())
 	fmt.Println(strings.Contains(writer.String(),
 		`"key":"value","level":"recover","msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleLogger_Record_1.func1\n\t`,
