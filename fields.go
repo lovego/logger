@@ -58,7 +58,7 @@ func (f *Fields) Errorf(format string, args ...interface{}) {
 
 func (f *Fields) Recover() {
 	if err := recover(); err != nil {
-		setStackField(f.data, 5, err)
+		setStackField(f.data, recoverStackSkip, err)
 		f.output(Recover, fmt.Sprint(err), f.data)
 	}
 }

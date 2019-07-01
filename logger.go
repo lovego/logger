@@ -88,7 +88,7 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 
 func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		l.output(Recover, fmt.Sprint(err), getStackField(5, err))
+		l.output(Recover, fmt.Sprint(err), getStackField(recoverStackSkip, err))
 	}
 }
 

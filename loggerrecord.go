@@ -2,10 +2,21 @@ package logger
 
 import (
 	"context"
+	"runtime"
 	"time"
 
 	"github.com/lovego/tracer"
 )
+
+var recoverStackSkip = getRecoverStackSkip()
+
+func getRecoverStackSkip() int {
+	if runtime.Version() >= "go1.12" {
+		return 5
+	} else {
+		return 6
+	}
+}
 
 func (l *Logger) Record(
 	workFunc func(context.Context) error, recoverFunc func(), fieldsFunc func(*Fields),
@@ -31,7 +42,7 @@ func (l *Logger) RecordWithContext(ctx context.Context,
 		}
 
 		if panicErr != nil {
-			setStackField(f.data, 5, panicErr)
+			setStackField(f.data, recoverStackSkip, panicErr)
 			f.output(Recover, panicErr, f.data)
 		} else if err != nil {
 			setStackField(f.data, 4, err)
