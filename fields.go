@@ -18,6 +18,7 @@ func (f *Fields) With(key string, value interface{}) *Fields {
 
 func (f *Fields) Debug(args ...interface{}) bool {
 	if len(args) > 0 && f.level >= Debug {
+		setStackField(f.data, 0, args...)
 		f.output(Debug, fmt.Sprint(args...), f.data)
 	}
 	return f.level >= Debug
@@ -25,12 +26,14 @@ func (f *Fields) Debug(args ...interface{}) bool {
 
 func (f *Fields) Debugf(format string, args ...interface{}) {
 	if f.level >= Debug {
+		setStackField(f.data, 0, args...)
 		f.output(Debug, fmt.Sprintf(format, args...), f.data)
 	}
 }
 
 func (f *Fields) Info(args ...interface{}) bool {
 	if len(args) > 0 && f.level >= Info {
+		setStackField(f.data, 0, args...)
 		f.output(Info, fmt.Sprint(args...), f.data)
 	}
 	return f.level >= Info
@@ -38,42 +41,50 @@ func (f *Fields) Info(args ...interface{}) bool {
 
 func (f *Fields) Infof(format string, args ...interface{}) {
 	if f.level >= Info {
+		setStackField(f.data, 0, args...)
 		f.output(Info, fmt.Sprintf(format, args...), f.data)
 	}
 }
 
 func (f *Fields) Error(args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	f.output(Error, fmt.Sprint(args...), f.data)
 }
 
 func (f *Fields) Errorf(format string, args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	f.output(Error, fmt.Sprintf(format, args...), f.data)
 }
 
 func (f *Fields) Recover() {
 	if err := recover(); err != nil {
+		setStackField(f.data, 5, err)
 		f.output(Recover, fmt.Sprint(err), f.data)
 	}
 }
 
 func (f *Fields) Panic(args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	msg := fmt.Sprint(args...)
-	f.output(Panic, fmt.Sprint(args...), f.data)
+	f.output(Panic, msg, f.data)
 	panic(msg)
 }
 
 func (f *Fields) Panicf(format string, args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	msg := fmt.Sprintf(format, args...)
 	f.output(Panic, msg, f.data)
 	panic(msg)
 }
 
 func (f *Fields) Fatal(args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	f.output(Fatal, fmt.Sprint(args...), f.data)
 	os.Exit(1)
 }
 
 func (f *Fields) Fatalf(format string, args ...interface{}) {
+	setStackField(f.data, 4, args...)
 	f.output(Fatal, fmt.Sprintf(format, args...), f.data)
 	os.Exit(1)
 }

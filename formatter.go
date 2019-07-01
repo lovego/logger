@@ -29,7 +29,7 @@ func (jf jsonFmt) Format(fields map[string]interface{}) ([]byte, error) {
 type readableFmt struct {
 }
 
-func (jif readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
+func (rf readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
 	var buf bytes.Buffer
 	encoder := json.NewEncoder(&buf)
 	encoder.SetEscapeHTML(false)

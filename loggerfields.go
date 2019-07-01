@@ -4,14 +4,13 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	"github.com/lovego/errs"
 )
 
 // Set a default field by key and value.
 // Don't use "level", "at", "msg", "stack", "duration" they will be overwritten.
 func (l *Logger) Set(key string, value interface{}) *Logger {
-	// if l.fields == nil {
-	// 	l.fields = make(map[string]interface{})
-	// }
 	l.fields[key] = value
 	return l
 }
@@ -42,4 +41,38 @@ func (l *Logger) SetMachineIP() *Logger {
 func (l *Logger) SetPid() *Logger {
 	l.fields["pid"] = os.Getpid()
 	return l
+}
+
+func getStackField(skip int, args ...interface{}) map[string]interface{} {
+	for _, arg := range args {
+		if err, ok := arg.(interface {
+			Error() string
+			Stack() string
+		}); ok {
+			if stack := err.Stack(); stack != "" {
+				return map[string]interface{}{"stack": stack}
+			}
+		}
+	}
+	if skip > 0 {
+		return map[string]interface{}{"stack": errs.Stack(skip)}
+	}
+	return nil
+}
+
+func setStackField(fields map[string]interface{}, skip int, args ...interface{}) {
+	for _, arg := range args {
+		if err, ok := arg.(interface {
+			Error() string
+			Stack() string
+		}); ok {
+			if stack := err.Stack(); stack != "" {
+				fields["stack"] = stack
+				return
+			}
+		}
+	}
+	if skip > 0 {
+		fields["stack"] = errs.Stack(skip)
+	}
 }

@@ -2,131 +2,128 @@ package logger
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"strings"
-	"testing"
 
 	"bou.ke/monkey"
 )
 
-func TestFieldsWith(t *testing.T) {
+func ExampleFields_With() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
-	if !strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
-`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+	str := writer.String()
+	fmt.Println(strings.HasSuffix(
+		str, `,"key":"value","key2":"value2","level":"info","msg":"the message"}
+`))
+	// Output: true
 }
 
-func TestFieldsDebug(t *testing.T) {
+func ExampleFields_Debug() {
 	writer := bytes.NewBuffer(nil)
-	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").
-		Debug(`the `, `message`)
-	if !strings.HasSuffix(writer.String(),
+	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").Debug(`the `, `message`)
+	fmt.Println(strings.HasSuffix(writer.String(),
 		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
-`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+`))
+	// Output: true
 }
 
-func TestFieldsDebugf(t *testing.T) {
+func ExampleFields_Debugf() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").
 		Debugf("%s %s", `the`, `message`)
-	if !strings.HasSuffix(writer.String(),
+	fmt.Println(strings.HasSuffix(writer.String(),
 		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
-`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+`))
+	// Output: true
 }
 
-func TestFieldsInfo(t *testing.T) {
+func ExampleFields_Info() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
-	if !strings.HasSuffix(writer.String(),
+	fmt.Println(strings.HasSuffix(writer.String(),
 		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
-`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+`))
+	// Output: true
 }
 
-func TestFieldsInfof(t *testing.T) {
+func ExampleFields_Infof() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Infof("%s %s", `the`, `message`)
-	if !strings.HasSuffix(writer.String(),
+	fmt.Println(strings.HasSuffix(writer.String(),
 		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
-`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+`))
+	// Output: true
 }
 
-func TestFieldsError(t *testing.T) {
+func ExampleFields_Error() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Error(`the `, `message`)
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"error","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestFieldsError\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleFields_Error\n\t`,
+	))
+	// Output: true
 }
 
-func TestFieldsErrorf(t *testing.T) {
+func ExampleFields_Errorf() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Errorf("%s %s", `the`, `message`)
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"error","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestFieldsErrorf\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleFields_Errorf\n\t`,
+	))
+	// Output: true
 }
 
-func TestFieldsRecover(t *testing.T) {
+func ExampleFields_Recover() {
 	writer := bytes.NewBuffer(nil)
 	func() {
 		defer New(writer).With("key", "value").With("key2", "value2").Recover()
 		panic("the message")
 	}()
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"recover","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestFieldsRecover.func1\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleFields_Recover.func1\n\t`,
+	))
+	// Output: true
 }
 
-func TestFieldsPanic(t *testing.T) {
+func ExampleFields_Panic() {
 	writer := bytes.NewBuffer(nil)
 	defer func() {
 		err := recover()
 		if err != "the message" {
-			t.Errorf("unexpected err: %v", err)
+			fmt.Printf("unexpected err: %v", err)
+			return
 		}
-		if !strings.Contains(writer.String(),
+		fmt.Println(strings.Contains(writer.String(),
 			`,"key":"value","key2":"value2","level":"panic","msg":"the message",`+
-				`"stack":"github.com/lovego/logger.TestFieldsPanic\n\t`) {
-			t.Errorf("unexpected output: %s", writer.String())
-		}
+				`"stack":"github.com/lovego/logger.ExampleFields_Panic\n\t`,
+		))
 	}()
 	New(writer).With("key", "value").With("key2", "value2").Panic("the message")
+	// Output: true
 }
 
-func TestFieldsPanicf(t *testing.T) {
+func ExampleFields_Panicf() {
 	writer := bytes.NewBuffer(nil)
 	defer func() {
 		err := recover()
 		if err != "the message" {
-			t.Errorf("unexpected err: %v", err)
+			fmt.Printf("unexpected err: %v", err)
+			return
 		}
-		if !strings.Contains(writer.String(),
+		fmt.Println(strings.Contains(writer.String(),
 			`,"key":"value","key2":"value2","level":"panic","msg":"the message",`+
-				`"stack":"github.com/lovego/logger.TestFieldsPanicf\n\t`) {
-			t.Errorf("unexpected output: %s", writer.String())
-		}
+				`"stack":"github.com/lovego/logger.ExampleFields_Panicf\n\t`,
+		))
 	}()
 	New(writer).With("key", "value").With("key2", "value2").Panicf("%s %s", "the", "message")
+	// Output: true
 }
 
-func TestFieldsFatal(t *testing.T) {
+func ExampleFields_Fatal() {
 	var exitStatus int
 	patch := monkey.Patch(os.Exit, func(status int) {
 		exitStatus = status
@@ -136,16 +133,17 @@ func TestFieldsFatal(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Fatal("the message")
 	if exitStatus != 1 {
-		t.Errorf("unexpected exit status: %d", exitStatus)
+		fmt.Printf("unexpected exit status: %d", exitStatus)
+		return
 	}
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"fatal","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestFieldsFatal\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleFields_Fatal\n\t`,
+	))
+	// Output: true
 }
 
-func TestFieldsFatalf(t *testing.T) {
+func ExampleFields_Fatalf() {
 	var exitStatus int
 	patch := monkey.Patch(os.Exit, func(status int) {
 		exitStatus = status
@@ -155,11 +153,12 @@ func TestFieldsFatalf(t *testing.T) {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Fatalf("%s %s", "the", "message")
 	if exitStatus != 1 {
-		t.Errorf("unexpected exit status: %d", exitStatus)
+		fmt.Printf("unexpected exit status: %d", exitStatus)
+		return
 	}
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"fatal","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestFieldsFatalf\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleFields_Fatalf\n\t`,
+	))
+	// Output: true
 }

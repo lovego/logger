@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/lovego/errs"
 )
 
 func (l *Logger) output(
@@ -43,18 +41,6 @@ func (l *Logger) getFields(
 		fields["msg"] = fmt.Sprint(msg)
 	}
 
-	if level <= Error {
-		if err, ok := msg.(interface {
-			Error() string
-			Stack() string
-		}); ok && err.Stack() != "" {
-			fields["stack"] = err.Stack()
-		} else if level == Recover {
-			fields["stack"] = errs.Stack(7)
-		} else {
-			fields["stack"] = errs.Stack(5)
-		}
-	}
 	return fields
 }
 
