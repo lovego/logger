@@ -31,7 +31,7 @@ func (l *Logger) RecordWithContext(ctx context.Context,
 		}
 
 		if panicErr != nil {
-			setStackField(f.data, 8, panicErr)
+			setStackField(f.data, 5, panicErr)
 			f.output(Recover, panicErr, f.data)
 		} else if err != nil {
 			setStackField(f.data, 4, err)

@@ -4,25 +4,23 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"reflect"
 	"strings"
-	"testing"
 )
 
-func TestSet(t *testing.T) {
+func ExampleSet() {
 	logger := New(nil)
-	if logger.Set("key", "value"); !reflect.DeepEqual(logger.fields,
-		map[string]interface{}{"key": "value"}) {
-		t.Errorf("unexpected logger fields %v", logger.fields)
-	}
+	logger.Set("key", "value")
+	fmt.Println(logger.fields)
+	// Output:
+	// map[key:value]
 }
 
-func TestSetMachineName(t *testing.T) {
+func ExampleSetMachineName() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.SetMachineName()
 	if _, ok := logger.fields["machineName"]; !ok {
-		t.Errorf("unexpected logger %v", logger)
+		fmt.Printf("unexpected logger %v", logger)
 	}
 	logger.Info("the message")
 
@@ -30,25 +28,25 @@ func TestSetMachineName(t *testing.T) {
 	expect := fmt.Sprintf(`"level":"info","machineName":"%s","msg":"the message"}
 `, hostname)
 
-	if !strings.HasSuffix(writer.String(), expect) {
-		t.Errorf("unexpected output: %s", writer.String())
-	} else {
-		t.Log(writer.String())
-	}
+	fmt.Println(strings.HasSuffix(writer.String(), expect))
+	// Output:
+	// true
 }
 
-func TestSetMachineIP(t *testing.T) {
+func ExampleSetMachineIP() {
 	logger := New(nil)
 	logger.SetMachineIP()
-	if _, ok := logger.fields["machineIP"]; !ok {
-		t.Errorf("unexpected logger %v", logger)
-	}
+	_, ok := logger.fields["machineIP"]
+	fmt.Println(ok)
+	// Output:
+	// true
 }
 
-func TestSetPid(t *testing.T) {
+func ExampleSetPid() {
 	logger := New(nil)
 	logger.SetPid()
-	if _, ok := logger.fields["pid"]; !ok {
-		t.Errorf("unexpected logger %v", logger)
-	}
+	_, ok := logger.fields["pid"]
+	fmt.Println(ok)
+	// Output:
+	// true
 }

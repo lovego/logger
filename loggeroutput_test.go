@@ -2,131 +2,107 @@ package logger
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
-	"testing"
-
-	"github.com/lovego/errs"
 )
 
-func TestOutput1(t *testing.T) {
+func ExampleLogger_output_1() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).SetPid().output(Info, "message", map[string]interface{}{"key": "value"})
 	expect := fmt.Sprintf(`,"key":"value","level":"info","msg":"message","pid":%d}`, os.Getpid())
-	if !strings.Contains(writer.String(), expect) {
-		t.Errorf("\nexpect: %s\n   got: %s", expect, writer.String())
-	}
+	fmt.Println(strings.Contains(writer.String(), expect))
+	// Output: true
 }
 
-func TestOutput2(t *testing.T) {
+func ExampleLogger_output_2() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).output(Error, "message", map[string]interface{}{"key": "value"})
-	if !strings.Contains(writer.String(),
-		`,"key":"value","level":"error","msg":"message","stack":"testing.tRunner\n\t`) {
-		t.Errorf("unexpect output: %s", writer.String())
-	}
+	fmt.Println(strings.Contains(writer.String(), `,"key":"value","level":"error","msg":"message"}`))
+	// Output: true
 }
 
-func TestOutput3(t *testing.T) {
+func ExampleLogger_output_3() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.writer = os.Stderr
 	logger.output(Panic, "message", map[string]interface{}{"key": "value"})
-	if strings.Contains(writer.String(),
-		`,"key":"value","level":"panic","msg":"message","stack":"testing.tRunner\n\t`) {
-		t.Errorf("unexpect output: %s", writer.String())
-	}
+	fmt.Println(writer.String())
+	// Output:
 }
 
-func TestGetFields1(t *testing.T) {
+func ExampleLogger_getFields_1() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.fields = map[string]interface{}{"key": true, "key1": "value1"}
-	if got := logger.getFields(Recover, "message", nil); got[`level`] != `recover` ||
-		got[`msg`] != `message` || got[`key`] != true || got[`key1`] != `value1` {
-		t.Errorf("unexpect got %v", got)
-	}
+	got := logger.getFields(Recover, "message", nil)
+	fmt.Println(got[`level`], got[`msg`], got[`key`], got[`key1`])
+	// Output:
+	// recover message true value1
 }
 
-func TestGetFields2(t *testing.T) {
-	writer := bytes.NewBuffer(nil)
-	logger := New(writer)
-	if got := logger.getFields(Error,
-		errs.Trace(errs.New("code", "message")), nil); got[`level`] != `error` {
-		t.Errorf("unexpect got %v", got)
-	}
-}
-
-func TestDoAlarm1(t *testing.T) {
+func ExampleLogger_doAlarm_1() {
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	logger := New(writer)
 	logger.SetAlarm(alarm)
 	logger.doAlarm(Panic, nil)
-	if alarm.title != `` || alarm.content != `null` {
-		t.Errorf("unexpect alarm %v", alarm)
-	}
+	fmt.Println(alarm.title, alarm.content)
+	// Output: null
 }
 
-func TestDoAlarm2(t *testing.T) {
+func ExampleLogger_doAlarm_2() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	var mapIn = make(map[interface{}]interface{})
 	logger.doAlarm(Panic, map[string]interface{}{"test": mapIn})
-	if !strings.Contains(writer.String(),
-		`"level":"error","msg":"logger format: json: unsupported type: map[interface {}]interface {}`) {
-		t.Errorf("unexpect writer %s", writer.String())
-	}
+	fmt.Println(strings.Contains(writer.String(),
+		`"level":"error","msg":"logger format: json: unsupported type: map[interface {}]interface {}`,
+	))
+	// Output: true
 }
 
-func TestFormat1(t *testing.T) {
+func ExampleLogger_format_1() {
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	logger := New(writer)
 	logger.SetAlarm(alarm)
-	var expectMap = map[string]interface{}{"key": true}
-	expect, err := json.MarshalIndent(expectMap, ``, `  `)
-	if err != nil {
-		t.Errorf("unexpect marshal err %v", err)
-	}
-	got := logger.format(map[string]interface{}{"key": true}, true)
-	if string(got) != string(expect) {
-		t.Errorf("unexpected got: %s", got)
-	}
+	fmt.Println(string(logger.format(map[string]interface{}{"key": true}, true)))
+	// Output:
+	// {
+	//   "key": true
+	// }
 }
 
-func TestFormat2(t *testing.T) {
+func ExampleLogger_format_2() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	var testIn = make(map[interface{}]interface{})
 	var fields = make(map[string]interface{})
 	fields[`key`] = testIn
-	content := logger.format(fields, true)
-	if content != nil {
-		t.Errorf("unexpect content %s", string(content))
-	}
+	fmt.Println(logger.format(fields, true) == nil)
+	// Output: true
 }
 
-func TestSetLevel(t *testing.T) {
+func ExampleLogger_SetLevel() {
 	logger := New(nil)
-	if got := logger.SetLevel(Panic); got.level != Error {
-		t.Errorf("unexpct level %d", logger.level)
-	}
+	logger.SetLevel(Panic)
+	fmt.Println(logger.level)
 
 	var level Level = 10
-	if got := logger.SetLevel(level); got.level != Debug {
-		t.Errorf("unexpect level %d", logger.level)
-	}
+	logger.SetLevel(level)
+	fmt.Println(logger.level)
 
-	if got := logger.SetLevel(Info); got.level != Info {
-		t.Errorf("unexpect level %d", got.level)
-	}
+	logger.SetLevel(Info)
+	fmt.Println(logger.level)
+
+	// Ouput:
+	// panic
+	// debug
+	// info
 }
 
-func TestString(t *testing.T) {
+func ExampleLevel_String() {
 	var l Level
 	l = 10
-	if got := l.String(); got != `invalid` {
-		t.Errorf("unexpect got %s", got)
-	}
+	fmt.Println(l.String())
+	// Ouput: invalid
 }

@@ -3,16 +3,16 @@ package logger
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/lovego/errs"
 	"github.com/lovego/tracer"
 )
 
-func TestWithSpan(t *testing.T) {
+func ExampleLogger_WithSpan() {
 	logger := New(nil)
 	var span = &tracer.Span{
 		At:       time.Now(),
@@ -29,12 +29,11 @@ func TestWithSpan(t *testing.T) {
 			"logs": []string{"the message"},
 		},
 	}
-	if !reflect.DeepEqual(got, expect) {
-		t.Errorf("unexpected got: %+v", got)
-	}
+	fmt.Println(reflect.DeepEqual(got, expect))
+	// Output: true
 }
 
-func TestRecord1(t *testing.T) {
+func ExampleLogger_Record_1() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(func(ctx context.Context) error {
@@ -42,41 +41,39 @@ func TestRecord1(t *testing.T) {
 	}, func() {}, func(f *Fields) {
 		f.With("key", "value")
 	})
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`"key":"value","level":"recover","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestRecord1.func1\n\t`,
-	) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleLogger_Record_1.func1\n\t`,
+	))
+	// Output: true
 }
 
-func TestRecord2(t *testing.T) {
+func ExampleLogger_Record_2() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(func(ctx context.Context) error {
 		return errs.New("code", "message")
 	}, nil, nil)
-	if !strings.Contains(writer.String(), `,"level":"error","msg":"code: message",`+
-		`"stack":"github.com/lovego/logger.(*Logger).RecordWithContext\n\t`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+	fmt.Println(strings.Contains(writer.String(), `,"level":"error","msg":"code: message",`+
+		`"stack":"github.com/lovego/logger.(*Logger).RecordWithContext\n\t`,
+	))
+	// Output: true
 }
 
-func TestRecord3(t *testing.T) {
+func ExampleLogger_Record_3() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(func(ctx context.Context) error {
 		return errs.Tracef("the message")
 	}, nil, nil)
-	if !strings.Contains(writer.String(),
+	fmt.Println(strings.Contains(writer.String(),
 		`,"level":"error","msg":"the message",`+
-			`"stack":"github.com/lovego/logger.TestRecord3.func1\n\t`,
-	) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+			`"stack":"github.com/lovego/logger.ExampleLogger_Record_3.func1\n\t`,
+	))
+	// Output: true
 }
 
-func TestRecord4(t *testing.T) {
+func ExampleLogger_Record_4() {
 	writer := bytes.NewBuffer(nil)
 	logger := New(writer)
 	logger.Record(func(ctx context.Context) error {
@@ -87,9 +84,11 @@ func TestRecord4(t *testing.T) {
 		return nil
 	}, nil, nil)
 	s := writer.String()
-	if !strings.Contains(s, `,"children":[{"name":"test","at":`) ||
-		!strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`) ||
-		!strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`) {
-		t.Errorf("unexpected output: %s", writer.String())
-	}
+	fmt.Println(strings.Contains(s, `,"children":[{"name":"test","at":`))
+	fmt.Println(strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`))
+	fmt.Println(strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`))
+	// Output:
+	// true
+	// true
+	// true
 }
