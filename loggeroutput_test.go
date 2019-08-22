@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+func ExampleLogger_output() {
+	New(os.Stderr).output(Info, "", nil)
+	// Output:
+}
+
 func ExampleLogger_output_1() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).SetPid().output(Info, "message", map[string]interface{}{"key": "value"})

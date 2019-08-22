@@ -37,7 +37,7 @@ func (l *Logger) getFields(
 	if fields["at"] == nil {
 		fields["at"] = time.Now()
 	}
-	if msg != nil {
+	if msg != nil && msg != "" {
 		fields["msg"] = fmt.Sprint(msg)
 	}
 
@@ -52,8 +52,8 @@ func (l *Logger) doAlarm(level Level, fields map[string]interface{}) {
 	msg, _ := fields["msg"].(string)
 	switch level {
 	case Recover, Error:
-		mergeKey := msg + "\n" + fields["stack"].(string) // 根据msg和stack对报警消息进行合并
-		l.alarm.Alarm(msg, string(content), mergeKey)
+		stack, _ := fields["stack"].(string)
+		l.alarm.Alarm(msg, string(content), msg+"\n"+stack) // 根据msg和stack对报警消息进行合并
 	case Fatal, Panic:
 		l.alarm.Send(msg, string(content))
 	}
