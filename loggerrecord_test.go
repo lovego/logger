@@ -12,20 +12,21 @@ import (
 	"github.com/lovego/tracer"
 )
 
-func ExampleLogger_WithSpan() {
+func ExampleLogger_WithTracer() {
 	logger := New(nil)
-	var span = &tracer.Span{
+	var t = &tracer.Tracer{
 		At:       time.Now(),
-		Children: []*tracer.Span{{At: time.Now()}},
+		Children: []*tracer.Tracer{{At: time.Now()}},
 		Tags:     map[string]interface{}{"key": "value"},
+		Logs:     []string{"the message"},
 	}
-	span.Log("the ", "message")
-	got := logger.WithSpan(span)
+	got := logger.WithTracer(t)
+
 	expect := &Fields{
 		Logger: logger,
 		data: map[string]interface{}{
-			"at": span.At, "duration": span.Duration,
-			"children": span.Children, "tags": span.Tags,
+			"at": t.At, "duration": t.Duration,
+			"children": t.Children, "tags": t.Tags,
 			"logs": []string{"the message"},
 		},
 	}
@@ -78,15 +79,15 @@ func ExampleLogger_Record_4() {
 	logger := New(writer)
 	logger.Record(func(ctx context.Context) error {
 		tracer.Tag(ctx, "tagKey", "tagValue")
-		span := tracer.StartSpan(ctx, "test")
-		span.Tag("tagK", "tagV")
-		defer span.Finish()
+		t := tracer.Start(ctx, "test")
+		tracer.Tag(t, "tagK", "tagV")
+		defer tracer.Finish(t)
 		return nil
 	}, nil, nil)
 	s := writer.String()
+	fmt.Println(strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`))
 	fmt.Println(strings.Contains(s, `,"children":[{"name":"test","at":`))
 	fmt.Println(strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`))
-	fmt.Println(strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`))
 	// Output:
 	// true
 	// true

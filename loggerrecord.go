@@ -2,7 +2,6 @@ package logger
 
 import (
 	"context"
-	"time"
 
 	"github.com/lovego/errs"
 	"github.com/lovego/tracer"
@@ -17,8 +16,7 @@ func (l *Logger) Record(
 func (l *Logger) RecordWithContext(ctx context.Context,
 	workFunc func(context.Context) error, recoverFunc func(), fieldsFunc func(*Fields),
 ) {
-	span := &tracer.Span{At: time.Now()}
-	ctx = tracer.Context(ctx, span)
+	ctx = tracer.Start(ctx, ``)
 	var err error
 	defer func() {
 		panicErr := recover()
@@ -26,7 +24,8 @@ func (l *Logger) RecordWithContext(ctx context.Context,
 			recoverFunc()
 		}
 
-		f := l.WithSpan(span)
+		tracer.Finish(ctx)
+		f := l.WithTracer(tracer.Get(ctx))
 		if fieldsFunc != nil {
 			fieldsFunc(f)
 		}
@@ -44,17 +43,20 @@ func (l *Logger) RecordWithContext(ctx context.Context,
 	err = workFunc(ctx)
 }
 
-func (l *Logger) WithSpan(span *tracer.Span) *Fields {
-	span.Finish()
-	f := l.With("at", span.At).With("duration", span.Duration)
-	if len(span.Children) > 0 {
-		f = f.With("children", span.Children)
+func (l *Logger) WithTracer(t *tracer.Tracer) *Fields {
+	if t == nil {
+		return &Fields{Logger: l, data: map[string]interface{}{}}
 	}
-	if len(span.Tags) > 0 {
-		f = f.With("tags", span.Tags)
+
+	f := l.With("at", t.At).With("duration", t.Duration)
+	if len(t.Children) > 0 {
+		f = f.With("children", t.Children)
 	}
-	if len(span.Logs) > 0 {
-		f = f.With("logs", span.Logs)
+	if len(t.Tags) > 0 {
+		f = f.With("tags", t.Tags)
+	}
+	if len(t.Logs) > 0 {
+		f = f.With("logs", t.Logs)
 	}
 	return f
 }
