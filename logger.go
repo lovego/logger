@@ -42,10 +42,12 @@ func New(writer io.Writer) *Logger {
 	} else {
 		formatter = jsonFormatter
 	}
+	hostname, _ := os.Hostname()
+
 	return &Logger{
 		level: Info, writer: writer,
 		formatter: formatter, alarmFormatter: readableFormatter,
-		fields: make(map[string]interface{}),
+		fields: map[string]interface{}{"machineName": hostname},
 	}
 }
 
