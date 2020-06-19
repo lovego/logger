@@ -43,7 +43,7 @@ func ExampleLogger_Record_1() {
 		f.With("key", "value")
 	})
 	fmt.Println(strings.Contains(writer.String(),
-		`"key":"value","level":"recover","msg":"the message",`+
+		`"key":"value","level":"recover",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleLogger_Record_1.func1\n\t`,
 	))
 	// Output: true
@@ -55,7 +55,7 @@ func ExampleLogger_Record_2() {
 	logger.Record(func(ctx context.Context) error {
 		return errs.New("code", "message")
 	}, nil, nil)
-	fmt.Println(strings.Contains(writer.String(), `,"level":"error","msg":"code: message",`+
+	fmt.Println(strings.Contains(writer.String(), `,"level":"error",`+machineName+`"msg":"code: message",`+
 		`"stack":"github.com/lovego/logger.(*Logger).RecordWithContext\n\t`,
 	))
 	// Output: true
@@ -68,7 +68,7 @@ func ExampleLogger_Record_3() {
 		return errs.Tracef("the message")
 	}, nil, nil)
 	fmt.Println(strings.Contains(writer.String(),
-		`,"level":"error","msg":"the message",`+
+		`,"level":"error",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleLogger_Record_3.func1\n\t`,
 	))
 	// Output: true
@@ -85,7 +85,7 @@ func ExampleLogger_Record_4() {
 		return nil
 	}, nil, nil)
 	s := writer.String()
-	fmt.Println(strings.Contains(s, `,"level":"info","tags":{"tagKey":"tagValue"}}`))
+	fmt.Println(strings.Contains(s, `,"level":"info",`+machineName+`"tags":{"tagKey":"tagValue"}}`))
 	fmt.Println(strings.Contains(s, `,"children":[{"name":"test","at":`))
 	fmt.Println(strings.Contains(s, `,"tags":{"tagK":"tagV"}}],"duration":`))
 	// Output:

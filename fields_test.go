@@ -9,12 +9,18 @@ import (
 	"bou.ke/monkey"
 )
 
+var machineName = getMachineName()
+
+func getMachineName() string {
+	name, _ := os.Hostname()
+	return fmt.Sprintf(`"machineName":"%s",`, name)
+}
 func ExampleFields_With() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
 	str := writer.String()
 	fmt.Println(strings.HasSuffix(
-		str, `,"key":"value","key2":"value2","level":"info","msg":"the message"}
+		str, `,"key":"value","key2":"value2","level":"info",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -23,7 +29,7 @@ func ExampleFields_Debug() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").Debug(`the `, `message`)
 	fmt.Println(strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
+		`,"key":"value","key2":"value2","level":"debug",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -33,7 +39,7 @@ func ExampleFields_Debugf() {
 	New(writer).SetLevel(Debug).With("key", "value").With("key2", "value2").
 		Debugf("%s %s", `the`, `message`)
 	fmt.Println(strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"debug","msg":"the message"}
+		`,"key":"value","key2":"value2","level":"debug",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -42,7 +48,7 @@ func ExampleFields_Info() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Info(`the `, `message`)
 	fmt.Println(strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
+		`,"key":"value","key2":"value2","level":"info",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -51,7 +57,7 @@ func ExampleFields_Infof() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Infof("%s %s", `the`, `message`)
 	fmt.Println(strings.HasSuffix(writer.String(),
-		`,"key":"value","key2":"value2","level":"info","msg":"the message"}
+		`,"key":"value","key2":"value2","level":"info",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -60,7 +66,7 @@ func ExampleFields_Error() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Error(`the `, `message`)
 	fmt.Println(strings.Contains(writer.String(),
-		`,"key":"value","key2":"value2","level":"error","msg":"the message",`+
+		`,"key":"value","key2":"value2","level":"error",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleFields_Error\n\t`,
 	))
 	// Output: true
@@ -70,7 +76,7 @@ func ExampleFields_Errorf() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Errorf("%s %s", `the`, `message`)
 	fmt.Println(strings.Contains(writer.String(),
-		`,"key":"value","key2":"value2","level":"error","msg":"the message",`+
+		`,"key":"value","key2":"value2","level":"error",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleFields_Errorf\n\t`,
 	))
 	// Output: true
@@ -83,7 +89,7 @@ func ExampleFields_Recover() {
 		panic("the message")
 	}()
 	fmt.Println(strings.Contains(writer.String(),
-		`,"key":"value","key2":"value2","level":"recover","msg":"the message",`+
+		`,"key":"value","key2":"value2","level":"recover",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleFields_Recover.func1\n\t`,
 	))
 	// Output: true
@@ -98,7 +104,7 @@ func ExampleFields_Panic() {
 			return
 		}
 		fmt.Println(strings.Contains(writer.String(),
-			`,"key":"value","key2":"value2","level":"panic","msg":"the message",`+
+			`,"key":"value","key2":"value2","level":"panic",`+machineName+`"msg":"the message",`+
 				`"stack":"github.com/lovego/logger.ExampleFields_Panic\n\t`,
 		))
 	}()
@@ -115,7 +121,7 @@ func ExampleFields_Panicf() {
 			return
 		}
 		fmt.Println(strings.Contains(writer.String(),
-			`,"key":"value","key2":"value2","level":"panic","msg":"the message",`+
+			`,"key":"value","key2":"value2","level":"panic",`+machineName+`"msg":"the message",`+
 				`"stack":"github.com/lovego/logger.ExampleFields_Panicf\n\t`,
 		))
 	}()
@@ -137,7 +143,7 @@ func ExampleFields_Fatal() {
 		return
 	}
 	fmt.Println(strings.Contains(writer.String(),
-		`,"key":"value","key2":"value2","level":"fatal","msg":"the message",`+
+		`,"key":"value","key2":"value2","level":"fatal",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleFields_Fatal\n\t`,
 	))
 	// Output: true
@@ -157,7 +163,7 @@ func ExampleFields_Fatalf() {
 		return
 	}
 	fmt.Println(strings.Contains(writer.String(),
-		`,"key":"value","key2":"value2","level":"fatal","msg":"the message",`+
+		`,"key":"value","key2":"value2","level":"fatal",`+machineName+`"msg":"the message",`+
 			`"stack":"github.com/lovego/logger.ExampleFields_Fatalf\n\t`,
 	))
 	// Output: true

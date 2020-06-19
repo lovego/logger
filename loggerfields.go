@@ -15,13 +15,6 @@ func (l *Logger) Set(key string, value interface{}) *Logger {
 	return l
 }
 
-// Set a default hostname field
-func (l *Logger) SetMachineName() *Logger {
-	hostname, _ := os.Hostname()
-	l.fields["machineName"] = hostname
-	return l
-}
-
 // Set a default ip field
 func (l *Logger) SetMachineIP() *Logger {
 	addrs, _ := net.InterfaceAddrs()

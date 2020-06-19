@@ -32,7 +32,7 @@ func ExampleWith() {
 	log := New(writer)
 	log.With("key", "value").Info(`the `, `message`)
 	fmt.Println(strings.HasSuffix(
-		writer.String(), `,"key":"value","level":"info","msg":"the message"}
+		writer.String(), `,"key":"value","level":"info",`+machineName+`"msg":"the message"}
 `))
 	// Output: true
 }
@@ -43,7 +43,7 @@ func ExampleDebug() {
 	log.SetAlarm(alarm)
 	log.SetLevel(Debug)
 	log.Debug(`the `, `message`)
-	fmt.Println(strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}
+	fmt.Println(strings.HasSuffix(writer.String(), `"level":"debug",`+machineName+`"msg":"the message"}
 `))
 	fmt.Println(*alarm == (testAlarm{}))
 	// Output:
@@ -57,7 +57,7 @@ func ExampleDebugf() {
 	log.SetAlarm(alarm)
 	log.SetLevel(Debug)
 	log.Debugf("%s %s", `the`, `message`)
-	fmt.Println(strings.HasSuffix(writer.String(), `"level":"debug","msg":"the message"}
+	fmt.Println(strings.HasSuffix(writer.String(), `"level":"debug",`+machineName+`"msg":"the message"}
 `))
 	fmt.Println(*alarm == (testAlarm{}))
 	// Output:
@@ -70,7 +70,7 @@ func ExampleInfo() {
 	log := New(writer)
 	log.SetAlarm(alarm)
 	log.Info(`the `, `message`)
-	fmt.Println(strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}
+	fmt.Println(strings.HasSuffix(writer.String(), `"level":"info",`+machineName+`"msg":"the message"}
 `))
 	fmt.Println(*alarm == (testAlarm{}))
 	// Output:
@@ -83,7 +83,7 @@ func ExampleInfof() {
 	log := New(writer)
 	log.SetAlarm(alarm)
 	log.Infof("%s %s", `the`, `message`)
-	fmt.Println(strings.HasSuffix(writer.String(), `"level":"info","msg":"the message"}
+	fmt.Println(strings.HasSuffix(writer.String(), `"level":"info",`+machineName+`"msg":"the message"}
 `))
 	fmt.Println(*alarm == (testAlarm{}))
 	// Output:
@@ -97,7 +97,7 @@ func ExampleError() {
 	log.SetAlarm(alarm)
 	log.Error(`the `, `message`)
 	fmt.Println(strings.Contains(writer.String(),
-		`"level":"error","msg":"the message","stack":"github.com/lovego/logger.ExampleError\n\t`,
+		`"level":"error",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExampleError\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
 	fmt.Println(strings.Contains(alarm.content, `the message
@@ -117,7 +117,7 @@ func ExampleErrorf() {
 	log.SetAlarm(alarm)
 	log.Errorf("%s %s", `the`, `message`)
 	fmt.Println(strings.Contains(writer.String(),
-		`"level":"error","msg":"the message","stack":"github.com/lovego/logger.ExampleErrorf\n\t`,
+		`"level":"error",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExampleErrorf\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
 	fmt.Println(strings.Contains(alarm.content, `the message
@@ -139,7 +139,7 @@ func ExampleRecover() {
 		defer log.Recover()
 		panic("the message")
 	}()
-	fmt.Println(strings.Contains(writer.String(), `"level":"recover","msg":"the message",`+
+	fmt.Println(strings.Contains(writer.String(), `"level":"recover",`+machineName+`"msg":"the message",`+
 		`"stack":"github.com/lovego/logger.ExampleRecover.func1\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
@@ -164,7 +164,7 @@ func ExamplePanic() {
 			fmt.Printf("unexpected err: %v", err)
 		}
 		fmt.Println(strings.Contains(writer.String(),
-			`"level":"panic","msg":"the message","stack":"github.com/lovego/logger.ExamplePanic\n\t`,
+			`"level":"panic",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExamplePanic\n\t`,
 		))
 		fmt.Println(alarm.title == "the message")
 		fmt.Println(strings.Contains(alarm.content, `the message
@@ -190,7 +190,7 @@ func ExamplePanicf() {
 			fmt.Printf("unexpected err: %v", err)
 		}
 		fmt.Println(strings.Contains(writer.String(),
-			`"level":"panic","msg":"the message","stack":"github.com/lovego/logger.ExamplePanicf\n\t`,
+			`"level":"panic",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExamplePanicf\n\t`,
 		))
 		fmt.Println(alarm.title == "the message")
 		fmt.Println(strings.Contains(alarm.content, `the message
@@ -221,7 +221,7 @@ func ExampleFatal() {
 		fmt.Printf("unexpected exit status: %d", exitStatus)
 	}
 	fmt.Println(strings.Contains(writer.String(),
-		`"level":"fatal","msg":"the message","stack":"github.com/lovego/logger.ExampleFatal\n\t`,
+		`"level":"fatal",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExampleFatal\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
 	fmt.Println(strings.Contains(alarm.content, `the message
@@ -250,7 +250,7 @@ func ExampleFatalf() {
 		fmt.Printf("unexpected exit status: %d", exitStatus)
 	}
 	fmt.Println(strings.Contains(writer.String(),
-		`"level":"fatal","msg":"the message","stack":"github.com/lovego/logger.ExampleFatalf\n\t`,
+		`"level":"fatal",`+machineName+`"msg":"the message","stack":"github.com/lovego/logger.ExampleFatalf\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
 	fmt.Println(strings.Contains(alarm.content, `the message

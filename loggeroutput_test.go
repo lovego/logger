@@ -15,7 +15,7 @@ func ExampleLogger_output() {
 func ExampleLogger_output_1() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).SetPid().output(Info, "message", map[string]interface{}{"key": "value"})
-	expect := fmt.Sprintf(`,"key":"value","level":"info","msg":"message","pid":%d}`, os.Getpid())
+	expect := fmt.Sprintf(`,"key":"value","level":"info",`+machineName+`"msg":"message","pid":%d}`, os.Getpid())
 	fmt.Println(strings.Contains(writer.String(), expect))
 	// Output: true
 }
@@ -23,7 +23,7 @@ func ExampleLogger_output_1() {
 func ExampleLogger_output_2() {
 	writer := bytes.NewBuffer(nil)
 	New(writer).output(Error, "message", map[string]interface{}{"key": "value"})
-	fmt.Println(strings.Contains(writer.String(), `,"key":"value","level":"error","msg":"message"}`))
+	fmt.Println(strings.Contains(writer.String(), `,"key":"value","level":"error",`+machineName+`"msg":"message"}`))
 	// Output: true
 }
 
@@ -61,7 +61,7 @@ func ExampleLogger_doAlarm_2() {
 	var mapIn = make(map[interface{}]interface{})
 	logger.doAlarm(Panic, map[string]interface{}{"test": mapIn})
 	fmt.Println(strings.Contains(writer.String(),
-		`"level":"error","msg":"logger format: json: unsupported type: map[interface {}]interface {}`,
+		`"level":"error",`+machineName+`"msg":"logger format: json: unsupported type: map[interface {}]interface {}`,
 	))
 	// Output: true
 }
