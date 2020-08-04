@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 var jsonFormatter jsonFmt
@@ -53,4 +54,12 @@ func (rf readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func PrintJson(v interface{}) {
+	data, err := json.MarshalIndent(v, ``, `  `)
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Println(string(data))
 }
