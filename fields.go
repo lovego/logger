@@ -7,6 +7,8 @@ import (
 	"github.com/lovego/errs"
 )
 
+var exitFunc = os.Exit
+
 type Fields struct {
 	*Logger
 	data map[string]interface{}
@@ -82,11 +84,11 @@ func (f *Fields) Panicf(format string, args ...interface{}) {
 func (f *Fields) Fatal(args ...interface{}) {
 	setStackField(f.data, 4, args...)
 	f.output(Fatal, fmt.Sprint(args...), f.data)
-	os.Exit(1)
+	exitFunc(1)
 }
 
 func (f *Fields) Fatalf(format string, args ...interface{}) {
 	setStackField(f.data, 4, args...)
 	f.output(Fatal, fmt.Sprintf(format, args...), f.data)
-	os.Exit(1)
+	exitFunc(1)
 }

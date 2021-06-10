@@ -110,10 +110,10 @@ func (l *Logger) Panicf(format string, args ...interface{}) {
 
 func (l *Logger) Fatal(args ...interface{}) {
 	l.output(Fatal, fmt.Sprint(args...), getStackField(4, args...))
-	os.Exit(1)
+	exitFunc(1)
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	l.output(Fatal, fmt.Sprintf(format, args...), getStackField(4, args...))
-	os.Exit(1)
+	exitFunc(1)
 }

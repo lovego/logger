@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"bou.ke/monkey"
 )
 
 var machineName = getMachineName()
@@ -131,10 +129,8 @@ func ExampleFields_Panicf() {
 
 func ExampleFields_Fatal() {
 	var exitStatus int
-	patch := monkey.Patch(os.Exit, func(status int) {
-		exitStatus = status
-	})
-	defer patch.Unpatch()
+	exitFunc = func(status int) { exitStatus = status }
+	defer func() { exitFunc = os.Exit }()
 
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Fatal("the message")
@@ -151,10 +147,8 @@ func ExampleFields_Fatal() {
 
 func ExampleFields_Fatalf() {
 	var exitStatus int
-	patch := monkey.Patch(os.Exit, func(status int) {
-		exitStatus = status
-	})
-	defer patch.Unpatch()
+	exitFunc = func(status int) { exitStatus = status }
+	defer func() { exitFunc = os.Exit }()
 
 	writer := bytes.NewBuffer(nil)
 	New(writer).With("key", "value").With("key2", "value2").Fatalf("%s %s", "the", "message")

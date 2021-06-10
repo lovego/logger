@@ -1,10 +1,10 @@
 # logger
 a logger that integrate with alarm.
 
-[![Build Status](https://travis-ci.org/lovego/logger.svg?branch=master)](https://travis-ci.org/lovego/logger)
-[![Coverage Status](https://img.shields.io/coveralls/github/lovego/logger/master.svg)](https://coveralls.io/github/lovego/logger?branch=master)
+[![Build Status](https://github.com/lovego/logger/actions/workflows/go.yml/badge.svg)](https://github.com/lovego/logger/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/lovego/logger/badge.svg?branch=master)](https://coveralls.io/github/lovego/logger)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lovego/logger)](https://goreportcard.com/report/github.com/lovego/logger)
-[![GoDoc](https://godoc.org/github.com/lovego/logger?status.svg)](https://godoc.org/github.com/lovego/logger)
+[![Documentation](https://pkg.go.dev/badge/github.com/lovego/logger)](https://pkg.go.dev/github.com/lovego/logger@v0.0.1)
 
 ## Install
 `$ go get github.com/lovego/logger`
@@ -39,5 +39,3 @@ logger.Record(func(ctx context.Context) error {
 })
 ```
 
-## Documentation
-  [https://godoc.org/github.com/lovego/logger](https://godoc.org/github.com/lovego/logger)

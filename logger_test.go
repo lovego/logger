@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"bou.ke/monkey"
 )
 
 type testAlarm struct {
@@ -208,10 +206,8 @@ github.com/lovego/logger.ExamplePanicf
 
 func ExampleFatal() {
 	var exitStatus int
-	patch := monkey.Patch(os.Exit, func(status int) {
-		exitStatus = status
-	})
-	defer patch.Unpatch()
+	exitFunc = func(status int) { exitStatus = status }
+	defer func() { exitFunc = os.Exit }()
 
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	log := New(writer)
@@ -237,10 +233,8 @@ github.com/lovego/logger.ExampleFatal
 
 func ExampleFatalf() {
 	var exitStatus int
-	patch := monkey.Patch(os.Exit, func(status int) {
-		exitStatus = status
-	})
-	defer patch.Unpatch()
+	exitFunc = func(status int) { exitStatus = status }
+	defer func() { exitFunc = os.Exit }()
 
 	writer, alarm := bytes.NewBuffer(nil), &testAlarm{}
 	log := New(writer)
