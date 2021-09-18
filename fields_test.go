@@ -88,7 +88,7 @@ func ExampleFields_Recover() {
 	}()
 	fmt.Println(strings.Contains(writer.String(),
 		`,"key":"value","key2":"value2","level":"recover",`+machineName+`"msg":"the message",`+
-			`"stack":"github.com/lovego/logger.ExampleFields_Recover.func1\n\t`,
+			`"stack":"github.com/lovego/logger.(*Fields).Recover\n\t`,
 	))
 	// Output: true
 }

@@ -138,11 +138,11 @@ func ExampleRecover() {
 		panic("the message")
 	}()
 	fmt.Println(strings.Contains(writer.String(), `"level":"recover",`+machineName+`"msg":"the message",`+
-		`"stack":"github.com/lovego/logger.ExampleRecover.func1\n\t`,
+		`"stack":"github.com/lovego/logger.(*Logger).Recover\n\t`,
 	))
 	fmt.Println(alarm.title == "the message")
 	fmt.Println(strings.Contains(alarm.content, `the message
-github.com/lovego/logger.ExampleRecover.func1
+github.com/lovego/logger.(*Logger).Recover
 `))
 	fmt.Println(strings.Contains(alarm.content, `"level": "recover"`))
 	// Output:

@@ -36,36 +36,45 @@ func (l *Logger) SetPid() *Logger {
 	return l
 }
 
-func getStackField(skip int, args ...interface{}) map[string]interface{} {
-	for _, arg := range args {
-		if err, ok := arg.(interface {
-			Error() string
-			Stack() string
-		}); ok {
-			if stack := err.Stack(); stack != "" {
-				return map[string]interface{}{"stack": stack}
-			}
-		}
-	}
-	if skip > 0 {
-		return map[string]interface{}{"stack": errs.Stack(skip)}
-	}
-	return nil
+func getExtraFields(args []interface{}, stack *errs.Stack) map[string]interface{} {
+	fields := map[string]interface{}{}
+	setExtraFields(fields, args, stack.IncrSkip())
+	return fields
 }
 
-func setStackField(fields map[string]interface{}, skip int, args ...interface{}) {
+func setExtraFields(fields map[string]interface{}, args []interface{}, stack *errs.Stack) {
+	if stackStr := getStack(args, stack.IncrSkip()); stackStr != "" {
+		fields["stack"] = stackStr
+	}
+	if data := getData(args); data != nil {
+		fields["data"] = data
+	}
+}
+
+func getStack(args []interface{}, stack *errs.Stack) string {
 	for _, arg := range args {
 		if err, ok := arg.(interface {
 			Error() string
 			Stack() string
 		}); ok {
 			if stack := err.Stack(); stack != "" {
-				fields["stack"] = stack
-				return
+				return stack
 			}
 		}
 	}
-	if skip > 0 {
-		fields["stack"] = errs.Stack(skip)
+	return stack.IncrSkip().String()
+}
+
+func getData(args []interface{}) interface{} {
+	for _, arg := range args {
+		if err, ok := arg.(interface {
+			Error() string
+			Data() interface{}
+		}); ok {
+			if data := err.Data(); data != nil {
+				return data
+			}
+		}
 	}
+	return nil
 }

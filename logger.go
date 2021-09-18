@@ -58,62 +58,62 @@ func (l *Logger) With(key string, value interface{}) *Fields {
 
 func (l *Logger) Debug(args ...interface{}) bool {
 	if len(args) > 0 && l.level >= Debug {
-		l.output(Debug, fmt.Sprint(args...), getStackField(0, args...))
+		l.output(Debug, fmt.Sprint(args...), getExtraFields(args, nil))
 	}
 	return l.level >= Debug
 }
 
 func (l *Logger) Debugf(format string, args ...interface{}) {
 	if l.level >= Debug {
-		l.output(Debug, fmt.Sprintf(format, args...), getStackField(0, args...))
+		l.output(Debug, fmt.Sprintf(format, args...), getExtraFields(args, nil))
 	}
 }
 
 func (l *Logger) Info(args ...interface{}) bool {
 	if len(args) > 0 && l.level >= Info {
-		l.output(Info, fmt.Sprint(args...), getStackField(0, args...))
+		l.output(Info, fmt.Sprint(args...), getExtraFields(args, nil))
 	}
 	return l.level >= Info
 }
 
 func (l *Logger) Infof(format string, args ...interface{}) {
 	if l.level >= Info {
-		l.output(Info, fmt.Sprintf(format, args...), getStackField(0, args...))
+		l.output(Info, fmt.Sprintf(format, args...), getExtraFields(args, nil))
 	}
 }
 
 func (l *Logger) Error(args ...interface{}) {
-	l.output(Error, fmt.Sprint(args...), getStackField(4, args...))
+	l.output(Error, fmt.Sprint(args...), getExtraFields(args, &errs.Stack{Skip: 1}))
 }
 
 func (l *Logger) Errorf(format string, args ...interface{}) {
-	l.output(Error, fmt.Sprintf(format, args...), getStackField(4, args...))
+	l.output(Error, fmt.Sprintf(format, args...), getExtraFields(args, &errs.Stack{Skip: 1}))
 }
 
 func (l *Logger) Recover() {
 	if err := recover(); err != nil {
-		l.output(Recover, fmt.Sprint(err), getStackField(4+errs.PanicStackDepth(), err))
+		l.output(Recover, fmt.Sprint(err), getExtraFields([]interface{}{err}, &errs.Stack{}))
 	}
 }
 
 func (l *Logger) Panic(args ...interface{}) {
 	msg := fmt.Sprint(args...)
-	l.output(Panic, fmt.Sprint(args...), getStackField(4, args...))
+	l.output(Panic, fmt.Sprint(args...), getExtraFields(args, &errs.Stack{Skip: 1}))
 	panic(msg)
 }
 
 func (l *Logger) Panicf(format string, args ...interface{}) {
 	msg := fmt.Sprintf(format, args...)
-	l.output(Panic, msg, getStackField(4, args...))
+	l.output(Panic, msg, getExtraFields(args, &errs.Stack{Skip: 1}))
 	panic(msg)
 }
 
 func (l *Logger) Fatal(args ...interface{}) {
-	l.output(Fatal, fmt.Sprint(args...), getStackField(4, args...))
+	l.output(Fatal, fmt.Sprint(args...), getExtraFields(args, &errs.Stack{Skip: 1}))
 	exitFunc(1)
 }
 
 func (l *Logger) Fatalf(format string, args ...interface{}) {
-	l.output(Fatal, fmt.Sprintf(format, args...), getStackField(4, args...))
+	l.output(Fatal, fmt.Sprintf(format, args...), getExtraFields(args, &errs.Stack{Skip: 1}))
 	exitFunc(1)
 }

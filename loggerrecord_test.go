@@ -44,7 +44,7 @@ func ExampleLogger_Record_1() {
 	})
 	fmt.Println(strings.Contains(writer.String(),
 		`"key":"value","level":"recover",`+machineName+`"msg":"the message",`+
-			`"stack":"github.com/lovego/logger.ExampleLogger_Record_1.func1\n\t`,
+			`"stack":"github.com/lovego/logger.(*Logger).RecordWithContext.func1\n\t`,
 	))
 	// Output: true
 }

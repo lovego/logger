@@ -31,10 +31,10 @@ func (l *Logger) RecordWithContext(ctx context.Context,
 		}
 
 		if panicErr != nil {
-			setStackField(f.data, 4+errs.PanicStackDepth(), panicErr)
+			setExtraFields(f.data, []interface{}{panicErr}, &errs.Stack{Skip: 0})
 			f.output(Recover, panicErr, f.data)
 		} else if err != nil {
-			setStackField(f.data, 4, err)
+			setExtraFields(f.data, []interface{}{err}, &errs.Stack{Skip: 1})
 			f.output(Error, err, f.data)
 		} else {
 			f.output(Info, nil, f.data)
