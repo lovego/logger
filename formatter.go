@@ -31,29 +31,28 @@ type readableFmt struct {
 }
 
 func (rf readableFmt) Format(fields map[string]interface{}) ([]byte, error) {
-	var buf bytes.Buffer
+	var buf = &bytes.Buffer{}
+	defer formatField(buf, fields, "msg")()
+	defer formatField(buf, fields, "data")()
+	defer formatField(buf, fields, "stack")()
 
-	var msg, stack = fields["msg"], fields["stack"]
-	if msg != nil && msg != "" {
-		buf.WriteString(fmt.Sprintf("%v\n", msg))
-		delete(fields, "msg")
-		defer func() { fields["msg"] = msg }()
-	}
-	if stack != nil && stack != "" {
-		buf.WriteString(fmt.Sprintf("%v\n", stack))
-		delete(fields, "stack")
-		defer func() { fields["stack"] = stack }()
-	}
-
-	encoder := json.NewEncoder(&buf)
+	encoder := json.NewEncoder(buf)
 	encoder.SetEscapeHTML(false)
 	encoder.SetIndent("", "  ")
-	err := encoder.Encode(fields)
-	if err != nil {
+	if err := encoder.Encode(fields); err != nil {
 		return nil, err
 	}
-
 	return buf.Bytes(), nil
+}
+
+func formatField(b *bytes.Buffer, fields map[string]interface{}, fieldName string) func() {
+	var fieldValue = fields[fieldName]
+	if fieldValue != nil && fieldValue != "" {
+		b.WriteString(fmt.Sprintf("%v\n", fieldValue))
+		delete(fields, fieldName)
+		return func() { fields[fieldName] = fieldValue }
+	}
+	return func() {}
 }
 
 func PrintJson(v interface{}) {

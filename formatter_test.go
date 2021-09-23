@@ -13,12 +13,14 @@ func ExampleJsonFormatter() {
 func ExampleReadableFormatter() {
 	bytes, err := readableFormatter.Format(map[string]interface{}{
 		"msg":   "some error",
+		"data":  "the data",
 		"stack": "the stack info",
 		"query": "a=b&c=d",
 	})
 	fmt.Println(string(bytes), err)
 	// Output:
 	// some error
+	// the data
 	// the stack info
 	// {
 	//   "query": "a=b&c=d"

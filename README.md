@@ -4,7 +4,7 @@ a logger that integrate with alarm.
 [![Build Status](https://github.com/lovego/logger/actions/workflows/go.yml/badge.svg)](https://github.com/lovego/logger/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/lovego/logger/badge.svg?branch=master)](https://coveralls.io/github/lovego/logger)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lovego/logger)](https://goreportcard.com/report/github.com/lovego/logger)
-[![Documentation](https://pkg.go.dev/badge/github.com/lovego/logger)](https://pkg.go.dev/github.com/lovego/logger@v0.0.2)
+[![Documentation](https://pkg.go.dev/badge/github.com/lovego/logger)](https://pkg.go.dev/github.com/lovego/logger@v0.0.3)
 
 ## Install
 `$ go get github.com/lovego/logger`
